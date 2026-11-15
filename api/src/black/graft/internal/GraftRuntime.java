@@ -36,10 +36,10 @@ public final class GraftRuntime {
 	private boolean clientDone;
 
 	/**
-	 * @param dist client or dedicated server
+	 * @param dist      client or dedicated server
 	 * @param configDir where mods' config files go
-	 * @param mods the mods, in load order
-	 * @param classes the class loader the mods' entrypoints are loaded from
+	 * @param mods      the mods, in load order
+	 * @param classes   the class loader the mods' entrypoints are loaded from
 	 */
 	public GraftRuntime(Dist dist, Path configDir, List<ModInfo> mods, ClassLoader classes) {
 		this.dist = dist;
@@ -103,7 +103,7 @@ public final class GraftRuntime {
 	public String summary(String platform) {
 		List<String> names = mods.stream().map(m -> m.id() + " " + m.version()).toList();
 		return platform + " (" + dist.name().toLowerCase(Locale.ROOT) + "), " + mods.size() + (mods.size() == 1 ? " mod" : " mods")
-				+ (names.isEmpty() ? "" : ": " + String.join(", ", names));
+			+ (names.isEmpty() ? "" : ": " + String.join(", ", names));
 	}
 
 	/** Everything at once, for a platform that has one moment for it: common entrypoints, client ones, and the end of startup. */

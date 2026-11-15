@@ -1,0 +1,21 @@
+{
+  "schemaVersion": 1,
+  "id": "graft",
+  "version": "${version}",
+  "name": "Graft for Fabric",
+  "description": "Runs Graft mods on Fabric, alongside Fabric mods. The same mod jar also runs on Graft's own loader.",
+  "license": "Apache-2.0",
+  "contact": { "sources": "https://github.com/Brendan-Black/Graft", "issues": "https://github.com/Brendan-Black/Graft/issues" },
+  "environment": "*",
+  "entrypoints": {
+    "main": ["black.graft.fabric.GraftFabric"],
+    "client": ["black.graft.fabric.GraftFabricClient"]
+  },
+  "mixins": ["graft.mixins.json"],
+  "depends": {
+    "fabricloader": ">=0.20.1",
+    "minecraft": "~26.3",
+    "java": ">=25",
+    "fabric-api": "*"
+  }
+}

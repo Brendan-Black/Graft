@@ -69,7 +69,7 @@ public final class Content {
 	 * block-state id map, then items. Called once, before Minecraft's registries freeze.
 	 *
 	 * @param addBlockStates whether to add the new blocks' states to {@code Block.BLOCK_STATE_REGISTRY} here, as vanilla's
-	 *        bootstrap does: Graft's agent must; Fabric does it itself on registration
+	 *                       bootstrap does: Graft's agent must; Fabric does it itself on registration
 	 */
 	public void register(boolean addBlockStates) {
 		if (registered) {

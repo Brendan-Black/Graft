@@ -14,11 +14,17 @@ with the JDK's own ClassFile API as the game loads them, and gives mods a short 
 events, key bindings, the field of view, config files and their own assets and data. Nothing is remapped, decompiled or
 redistributed. Mods compile against Mojang's own jar.
 
-This repository holds three things:
+A Graft mod is one jar that runs two ways: on Graft's own agent, light and standalone, or **on Fabric, alongside Fabric
+mods**, through Graft for Fabric. Nothing is recompiled. The Gradle plugin writes the jar's `fabric.mod.json` from its
+Graft descriptor.
+
+This repository holds:
 
 | Folder | What it is |
 |---|---|
-| [`loader/`](loader) | Graft itself: the agent, and the API mods compile against (`black.graft`) |
+| [`api/`](api) | The API mods compile against (`black.graft`), and the runtime every platform shares |
+| [`loader/`](loader) | Graft's own loader: a Java agent |
+| [`fabric/`](fabric) | Graft for Fabric: a Fabric mod that runs Graft mods on Fabric |
 | [`gradle-plugin/`](gradle-plugin) | `black.graft.mod`: puts Minecraft on a mod's compile class path and adds `runClient`/`runServer` |
 | [`truezoom/`](truezoom) | True Zoom, the reference mod: hold C to zoom, plus a block and a snack |
 
@@ -45,6 +51,9 @@ $ java -jar graft.jar server --nogui
 Graft unpacks the server the way the vanilla jar does (into `versions/` and `libraries/`, every file checked against
 the checksum the bundle lists) and starts it with mods. `--server-jar <file>` names a different server jar; everything
 else is passed to Minecraft.
+
+**On Fabric.** Install Fabric Loader 0.20.1+ and Fabric API for 26.3 as usual, then put `graft-fabric.jar` and the Graft
+mods in `mods/`, with any Fabric mods you like.
 
 **Clients and servers need the same mods.** Graft 0.1 doesn't check this when you join: see [the roadmap](#parity).
 
@@ -78,7 +87,8 @@ repositories {
 }
 
 dependencies {
-    graft("com.github.Brendan-Black.Graft:loader:0.1.0")
+    compileOnly("com.github.Brendan-Black.Graft:api:0.1.0") // what you compile against
+    graft("com.github.Brendan-Black.Graft:loader:0.1.0")    // what runClient and runServer run with
 }
 
 java { toolchain.languageVersion = JavaLanguageVersion.of(25) }
@@ -87,7 +97,7 @@ java { toolchain.languageVersion = JavaLanguageVersion.of(25) }
 The first build fetches Minecraft 26.3's client jar and libraries from Mojang into Gradle's cache, each checked against
 the SHA-1 Mojang publishes (the version file itself is pinned by hash in the plugin). `./gradlew runClient` starts the
 game with your mod loaded straight from the build; `./gradlew runServer` starts a dedicated server. Both run from
-`run/` in your project.
+`run/` in your project. Your jar also gets a `fabric.mod.json`, written from your descriptor, so the same jar loads on Fabric.
 
 ### The descriptor
 
@@ -183,6 +193,7 @@ mods need:
 | Config files | ✓ | library | ✓, typed and checked |
 | Mod assets and data | ✓ | ✓ | ✓, no `pack.mcmeta` needed |
 | Dev environment (`runClient`, `runServer`) | ForgeGradle | Loom | `black.graft.mod` |
+| Runs alongside the other loader's mods | — | — | Fabric mods, through Graft for Fabric; NeoForge next |
 | Bytecode changes by mods | coremods, mixins | mixins | roadmap: a public patch API |
 | Networking, custom packets | ✓ | ✓ | roadmap |
 | Join check: same mods on both ends | ✓ | ✓ | roadmap |
@@ -209,6 +220,13 @@ fails, not your game.
 | `client.Options` | constructor | after `keyMappings` is set | key bindings, before saved keys load |
 | `client.Camera` | `calculateFov(float)` | every return | field-of-view steps |
 | `client.Minecraft` | `tick()` | every return | `ClientTick` |
+
+## Publishing Graft mods
+
+Graft mods are published as Fabric mods that depend on Graft for Fabric, which is honestly what they are there: they
+run on Fabric with that one library. CurseForge supports only Forge, NeoForge, Fabric and Quilt, so this is how Graft
+mods get there. On Modrinth they can be tagged `fabric` the same way. Graft's own loader can be listed under Modrinth's
+`java-agent` tag. A `graft` tag of its own is something to ask Modrinth for once there are mods to show.
 
 ## When Graft stops the game
 

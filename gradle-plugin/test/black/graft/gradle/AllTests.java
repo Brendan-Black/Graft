@@ -9,6 +9,7 @@ public final class AllTests {
 		Check.group("version file", PluginTest::versionFile);
 		Check.group("downloads (PseudoHttp: hashes, cache, failures)", PluginTest::downloads);
 		Check.group("assets (PseudoHttp: index, objects, resuming)", PluginTest::assets);
+		Check.group("Fabric metadata from descriptors", FabricMetadataTest::run);
 		System.exit(Check.summary());
 	}
 }

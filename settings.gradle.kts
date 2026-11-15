@@ -19,4 +19,4 @@ plugins {
 }
 
 rootProject.name = "Graft"
-include("api", "loader", "truezoom")
+include("api", "loader", "fabric", "truezoom")

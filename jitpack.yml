@@ -1,7 +1,7 @@
-# JitPack builds each tag into com.github.Brendan-Black.Graft:loader:<tag> and :gradle-plugin:<tag>.
+# JitPack builds each tag into com.github.Brendan-Black.Graft:{api,loader,fabric,gradle-plugin}:<tag>.
 # Gradle runs on JDK 21 here and fetches the JDK 25 toolchain (settings.gradle.kts).
 jdk:
   - openjdk21
 install:
   - ./gradlew -p gradle-plugin publishToMavenLocal -x runTests
-  - ./gradlew :loader:publishToMavenLocal -x runTests
+  - ./gradlew :api:publishToMavenLocal :loader:publishToMavenLocal :fabric:publishToMavenLocal -x runTests

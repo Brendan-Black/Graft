@@ -1,6 +1,7 @@
 package black.graft;
 
 import java.util.Objects;
+import java.util.Optional;
 
 /**
  * The versions a dependency accepts, written the way Maven and Forge write them:
@@ -97,6 +98,26 @@ public final class VersionRange {
 
 	private static IllegalArgumentException invalid(String text, String why, @Nullable Throwable cause) {
 		return new IllegalArgumentException("not a version range: \"" + text + "\"; " + why, cause);
+	}
+
+	/** The lowest version in the range, if it has a lower bound. */
+	public Optional<Version> minimum() {
+		return Optional.ofNullable(lower);
+	}
+
+	/** Whether {@link #minimum()} itself is in the range. */
+	public boolean includesMinimum() {
+		return lowerInclusive;
+	}
+
+	/** The highest version in the range, if it has an upper bound. */
+	public Optional<Version> maximum() {
+		return Optional.ofNullable(upper);
+	}
+
+	/** Whether {@link #maximum()} itself is in the range. */
+	public boolean includesMaximum() {
+		return upperInclusive;
 	}
 
 	/** Whether {@code version} is inside this range. */

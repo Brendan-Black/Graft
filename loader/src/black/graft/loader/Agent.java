@@ -90,7 +90,7 @@ public final class Agent {
 			patches.addAll(MinecraftPatches.client(ClassDesc.of(CLIENT_HOOKS)));
 		}
 		GraftRuntime runtime = new GraftRuntime(environment.dist(), environment.configDir(), resolved.stream().map(ModCandidate::info).toList(),
-				ClassLoader.getSystemClassLoader());
+			ClassLoader.getSystemClassLoader());
 		GraftRuntime.install(runtime);
 		Agent.mods = List.copyOf(resolved);
 		instrumentation.addTransformer(new GraftTransformer(patches));

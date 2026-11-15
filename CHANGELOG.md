@@ -14,5 +14,8 @@ API, and an API for mods. Mods get:
 - typed config files
 - their own assets and data, offered as built-in packs
 
+Graft for Fabric runs the same mod jars on Fabric Loader 0.20.1 and Fabric API for 26.3, alongside Fabric mods; the
+Gradle plugin writes each mod's `fabric.mod.json` from its descriptor. Mods compile against the new `api` artifact.
+
 There is also `java -jar graft.jar server` for dedicated servers, the `black.graft.mod` Gradle plugin, and True Zoom as
 the reference mod.

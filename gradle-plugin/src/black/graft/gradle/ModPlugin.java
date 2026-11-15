@@ -45,6 +45,16 @@ public final class ModPlugin implements Plugin<Project> {
 		if (resources == null) {
 			throw new IllegalStateException("the main source set has no resources folder");
 		}
+		// The same jar runs on Fabric: fabric.mod.json, written from the descriptor, lets Graft for Fabric load it.
+		TaskProvider<GenerateFabricMetadata> fabric = project.getTasks().register("graftFabricMetadata", GenerateFabricMetadata.class, t -> {
+			t.setGroup(GROUP);
+			t.setDescription("Writes fabric.mod.json from graft.mod.properties, so the mod also loads on Fabric.");
+			t.getResources().from(main.getResources().getSourceDirectories());
+			t.getOutputDir().set(project.getLayout().getBuildDirectory().dir("generated/graft/fabric"));
+		});
+		// Into processResources directly, not as a source folder: a build script that sets its own resource folders keeps it.
+		project.getTasks().named(main.getProcessResourcesTaskName(), org.gradle.language.jvm.tasks.ProcessResources.class, t -> t.from(fabric));
+
 		File clientDir = project.file("run/client");
 		File serverDir = project.file("run/server");
 

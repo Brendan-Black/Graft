@@ -26,14 +26,21 @@ java {
 }
 
 dependencies {
+    implementation("com.github.Brendan-Black.black-java:lib:1.2.0")
     errorprone("com.google.errorprone:error_prone_core:2.52.0")
     errorprone("com.uber.nullaway:nullaway:0.14.3")
 }
 
-// The plugin shares the loader's JSON reader: one copy of the code, synced in here and compiled into both.
+// The plugin shares code with Graft's API: the JSON reader, and the descriptor parser with the values it reads, so a
+// descriptor fails the build exactly when it would fail the game. One copy of each, synced in here and compiled into both.
 val sharedJson = tasks.register<Sync>("sharedJson") {
-    from("../api/src/black/graft/json")
-    into(layout.buildDirectory.dir("shared/black/graft/json"))
+    from("../api/src") {
+        include("black/graft/json/**")
+        include("black/graft/internal/Descriptors.java", "black/graft/internal/ErrorCode.java", "black/graft/internal/LoadingException.java")
+        include("black/graft/ModId.java", "black/graft/ModInfo.java", "black/graft/Dependency.java", "black/graft/Nullable.java")
+        include("black/graft/Version.java", "black/graft/VersionRange.java")
+    }
+    into(layout.buildDirectory.dir("shared"))
 }
 sourceSets {
     main { java.setSrcDirs(listOf(layout.projectDirectory.dir("src"), files(layout.buildDirectory.dir("shared")).builtBy(sharedJson))) }
