@@ -9,8 +9,8 @@ import java.util.List;
 import java.util.Map;
 
 import black.graft.Nullable;
-import black.graft.loader.ErrorCode;
-import black.graft.loader.LoadingException;
+import black.graft.internal.ErrorCode;
+import black.graft.internal.LoadingException;
 
 /**
  * Patches Minecraft's classes as the JVM loads them.

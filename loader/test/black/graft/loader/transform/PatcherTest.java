@@ -19,8 +19,8 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
-import black.graft.loader.ErrorCode;
-import black.graft.loader.LoadingException;
+import black.graft.internal.ErrorCode;
+import black.graft.internal.LoadingException;
 import black.graft.loader.transform.Patch.Injection;
 
 /**

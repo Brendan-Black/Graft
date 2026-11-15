@@ -18,10 +18,12 @@ version = "1.0.0"
 
 java { toolchain.languageVersion = JavaLanguageVersion.of(25) }
 
-// A mod outside this repository writes graft("com.github.Brendan-Black.Graft:loader:<version>") instead.
+// Compiled against the API; run with Graft's agent. A mod outside this repository writes
+// compileOnly("com.github.Brendan-Black.Graft:api:<version>") and graft("com.github.Brendan-Black.Graft:loader:<version>").
 dependencies {
+    compileOnly(project(":api"))
     graft(project(":loader"))
-    testImplementation(project(":loader"))
+    testImplementation(project(":api"))
     errorprone("com.google.errorprone:error_prone_core:2.52.0")
     errorprone("com.uber.nullaway:nullaway:0.14.3")
 }

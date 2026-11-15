@@ -1,5 +1,7 @@
 package black.graft.loader;
 
+import black.graft.internal.Descriptors;
+
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.OutputStream;

@@ -1,9 +1,10 @@
-package black.graft.loader;
+package black.graft.internal;
 
 import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.function.Function;
 
 import black.graft.ModId;
@@ -22,7 +23,7 @@ import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
 
 /** Every block, item and creative tab entry the mods declared, and the code that puts them into Minecraft. */
-final class Content {
+public final class Content {
 	private record BlockDecl<B extends Block>(ResourceKey<Block> key, Function<BlockBehaviour.Properties, B> factory, RegisteredContent<B> handle) {
 		void create() {
 			B block = factory.apply(BlockBehaviour.Properties.of().setId(key));
@@ -65,9 +66,12 @@ final class Content {
 
 	/**
 	 * Creates and registers everything, the way vanilla's own bootstrap does: blocks, then their states into the global
-	 * block-state id map, then items. Called once, just before Minecraft freezes its registries.
+	 * block-state id map, then items. Called once, before Minecraft's registries freeze.
+	 *
+	 * @param addBlockStates whether to add the new blocks' states to {@code Block.BLOCK_STATE_REGISTRY} here, as vanilla's
+	 *        bootstrap does: Graft's agent must; Fabric does it itself on registration
 	 */
-	void register() {
+	public void register(boolean addBlockStates) {
 		if (registered) {
 			return;
 		}
@@ -76,6 +80,9 @@ final class Content {
 			b.create();
 		}
 		for (BlockDecl<?> b : blocks) {
+			if (!addBlockStates) {
+				break;
+			}
 			for (BlockState state : b.handle().get().getStateDefinition().getPossibleStates()) {
 				Block.BLOCK_STATE_REGISTRY.add(state);
 				state.initCache();
@@ -87,23 +94,28 @@ final class Content {
 	}
 
 	/** The mods' entries for a creative tab Minecraft is filling, in the order they were added. */
-	List<ItemStack> entriesFor(CreativeModeTab tab) {
-		if (tabs.isEmpty()) {
+	public List<ItemStack> entriesFor(CreativeModeTab tab) {
+		return BuiltInRegistries.CREATIVE_MODE_TAB.getResourceKey(tab).map(this::entriesFor).orElse(List.of());
+	}
+
+	/** The mods' entries for the creative tab with this key: none unless it's one of vanilla's. */
+	public List<ItemStack> entriesFor(ResourceKey<CreativeModeTab> key) {
+		if (tabs.isEmpty() || !key.identifier().getNamespace().equals(ModId.MINECRAFT.value())) {
 			return List.of();
 		}
 		List<ItemStack> entries = new ArrayList<>();
-		BuiltInRegistries.CREATIVE_MODE_TAB.getResourceKey(tab).ifPresent(key -> {
-			if (!key.identifier().getNamespace().equals(ModId.MINECRAFT.value())) {
-				return;
-			}
-			for (VanillaTab vanilla : VanillaTab.values()) {
-				if (vanilla.path().equals(key.identifier().getPath())) {
-					for (Registered<? extends ItemLike> item : tabs.getOrDefault(vanilla, List.of())) {
-						entries.add(new ItemStack(item.get()));
-					}
+		for (VanillaTab vanilla : VanillaTab.values()) {
+			if (vanilla.path().equals(key.identifier().getPath())) {
+				for (Registered<? extends ItemLike> item : tabs.getOrDefault(vanilla, List.of())) {
+					entries.add(new ItemStack(item.get()));
 				}
 			}
-		});
+		}
 		return entries;
+	}
+
+	/** The vanilla tabs mods added entries to. */
+	public Set<VanillaTab> tabsWithEntries() {
+		return Set.copyOf(tabs.keySet());
 	}
 }

@@ -1,4 +1,4 @@
-package black.graft.loader;
+package black.graft.internal;
 
 import java.util.List;
 

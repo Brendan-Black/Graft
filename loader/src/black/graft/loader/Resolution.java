@@ -1,5 +1,8 @@
 package black.graft.loader;
 
+import black.graft.internal.ErrorCode;
+import black.graft.internal.LoadingException;
+
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.LinkedHashMap;

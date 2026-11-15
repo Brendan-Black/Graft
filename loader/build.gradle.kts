@@ -24,7 +24,7 @@ java {
     withJavadocJar()
 }
 
-// black-java's lib (black.TypedString) goes inside the jar: the game runs Graft as a single agent jar, with nothing beside it.
+// The API and black-java's lib (black.TypedString) go inside the jar: the game runs Graft as a single agent jar.
 val bundled: Configuration by configurations.creating {
     isTransitive = false
 }
@@ -32,6 +32,7 @@ configurations.compileOnly { extendsFrom(bundled) }
 configurations.testImplementation { extendsFrom(bundled) }
 
 dependencies {
+    bundled(project(":api"))
     bundled("com.github.Brendan-Black.black-java:lib:1.2.0")
     errorprone("com.google.errorprone:error_prone_core:2.52.0")
     errorprone("com.uber.nullaway:nullaway:0.14.3")
@@ -78,7 +79,8 @@ tasks.jar {
             "Implementation-Version" to project.version,
         )
     }
-    from(bundled.map { zipTree(it) }) { exclude("META-INF/**") }
+    dependsOn(bundled)
+    from(bundled.map { zipTree(it) }) { exclude("META-INF/**", "LICENSE") }
     from(rootProject.file("LICENSE"))
 }
 

@@ -1,4 +1,4 @@
-package black.graft.loader;
+package black.graft.internal;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -33,6 +33,9 @@ public final class EventBus {
 
 	/** Stops adding listeners and makes the ones added visible to every thread. */
 	public void freeze() {
+		if (!open) {
+			return;
+		}
 		Map<Class<?>, List<Listener<?>>> copy = new HashMap<>();
 		adding.forEach((type, list) -> copy.put(type, List.copyOf(list)));
 		frozen = Map.copyOf(copy);

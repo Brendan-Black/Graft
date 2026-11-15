@@ -32,7 +32,7 @@ dependencies {
 
 // The plugin shares the loader's JSON reader: one copy of the code, synced in here and compiled into both.
 val sharedJson = tasks.register<Sync>("sharedJson") {
-    from("../loader/src/black/graft/json")
+    from("../api/src/black/graft/json")
     into(layout.buildDirectory.dir("shared/black/graft/json"))
 }
 sourceSets {

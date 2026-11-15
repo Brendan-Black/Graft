@@ -1,4 +1,4 @@
-package black.graft.loader;
+package black.graft.internal;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -27,18 +27,18 @@ import net.minecraft.world.level.block.state.BlockBehaviour;
 /** The {@link Setup} one mod gets while its entrypoint runs. */
 final class SetupImpl implements Setup {
 	private final ModInfo mod;
-	private final ModRuntime runtime;
-	private final ModRuntime.Window window;
+	private final GraftRuntime runtime;
+	private final GraftRuntime.Window window;
 	private final Set<ContentName> blocks = new HashSet<>();
 	private final Set<ContentName> items = new HashSet<>();
 	private final Set<Registered<?>> blocksWithItems = new HashSet<>();
 	private final Events events;
 	private boolean configLoaded;
 
-	SetupImpl(ModInfo mod, ModRuntime runtime) {
+	SetupImpl(ModInfo mod, GraftRuntime runtime) {
 		this.mod = mod;
 		this.runtime = runtime;
-		this.window = new ModRuntime.Window(mod, "initialize()");
+		this.window = new GraftRuntime.Window(mod, "initialize()");
 		this.events = new ModEvents(mod, runtime.events(), window);
 	}
 
@@ -53,7 +53,7 @@ final class SetupImpl implements Setup {
 
 	@Override
 	public Dist dist() {
-		return runtime.environment().dist();
+		return runtime.dist();
 	}
 
 	@Override
@@ -120,9 +120,9 @@ final class SetupImpl implements Setup {
 	static final class ModEvents implements Events {
 		private final ModInfo mod;
 		private final EventBus bus;
-		private final ModRuntime.Window window;
+		private final GraftRuntime.Window window;
 
-		ModEvents(ModInfo mod, EventBus bus, ModRuntime.Window window) {
+		ModEvents(ModInfo mod, EventBus bus, GraftRuntime.Window window) {
 			this.mod = mod;
 			this.bus = bus;
 			this.window = window;

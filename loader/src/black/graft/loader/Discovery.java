@@ -1,5 +1,9 @@
 package black.graft.loader;
 
+import black.graft.internal.ErrorCode;
+import black.graft.internal.LoadingException;
+import black.graft.internal.Descriptors;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.DirectoryStream;

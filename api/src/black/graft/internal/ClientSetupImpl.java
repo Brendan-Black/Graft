@@ -1,4 +1,4 @@
-package black.graft.loader;
+package black.graft.internal;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -15,18 +15,18 @@ import black.graft.event.Events;
 /** The {@link ClientSetup} one mod gets while its client entrypoint runs. */
 final class ClientSetupImpl implements ClientSetup {
 	private final ModInfo mod;
-	private final ModRuntime runtime;
-	private final ClientRuntime client;
-	private final ModRuntime.Window window;
+	private final GraftRuntime runtime;
+	private final ClientContent client;
+	private final GraftRuntime.Window window;
 	private final Events events;
 	private final Set<ContentName> keyNames = new HashSet<>();
 	private boolean configLoaded;
 
-	ClientSetupImpl(ModInfo mod, ModRuntime runtime, ClientRuntime client) {
+	ClientSetupImpl(ModInfo mod, GraftRuntime runtime, ClientContent client) {
 		this.mod = mod;
 		this.runtime = runtime;
 		this.client = client;
-		this.window = new ModRuntime.Window(mod, "initializeClient()");
+		this.window = new GraftRuntime.Window(mod, "initializeClient()");
 		this.events = new SetupImpl.ModEvents(mod, runtime.events(), window);
 	}
 

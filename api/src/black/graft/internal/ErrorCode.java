@@ -1,4 +1,4 @@
-package black.graft.loader;
+package black.graft.internal;
 
 /**
  * Codes for the problems Graft stops the game over. A player sees the message and the code, not the source, so each

@@ -1,4 +1,4 @@
-package black.graft.loader;
+package black.graft.internal;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -13,7 +13,7 @@ import net.minecraft.client.KeyMapping;
 import net.minecraft.resources.Identifier;
 
 /** What client mods declared: key bindings and field-of-view steps. */
-final class ClientRuntime {
+public final class ClientContent {
 	private final List<KeyBindingImpl> keyBindings = new ArrayList<>();
 	private final List<FovModifier> fovModifiers = new ArrayList<>();
 	private volatile List<FovModifier> fovChain = List.of();
@@ -31,10 +31,9 @@ final class ClientRuntime {
 	}
 
 	/**
-	 * Vanilla's key mappings followed by the mods', creating the mods' the first time. Each mod gets its own category in
-	 * Controls.
+	 * The mods' key mappings, created the first time they're asked for. Each mod gets its own category in Controls.
 	 */
-	KeyMapping[] extend(KeyMapping[] vanilla) {
+	public List<KeyMapping> mappings() {
 		KeyMapping[] mine = created;
 		if (mine == null) {
 			Map<ModId, KeyMapping.Category> categories = new HashMap<>();
@@ -48,13 +47,20 @@ final class ClientRuntime {
 			}
 			created = mine;
 		}
+		return List.of(mine);
+	}
+
+	/** Vanilla's key mappings followed by the mods', for Graft's agent, which adds them as the options load. */
+	public KeyMapping[] extend(KeyMapping[] vanilla) {
+		KeyMapping[] mine = mappings().toArray(KeyMapping[]::new);
 		KeyMapping[] all = new KeyMapping[vanilla.length + mine.length];
 		System.arraycopy(vanilla, 0, all, 0, vanilla.length);
 		System.arraycopy(mine, 0, all, vanilla.length, mine.length);
 		return all;
 	}
 
-	float modifyFov(float fov, float partialTick) {
+	/** Runs the mods' field-of-view steps over vanilla's. */
+	public float modifyFov(float fov, float partialTick) {
 		float result = fov;
 		for (FovModifier m : fovChain) {
 			result = m.modify(result, partialTick);

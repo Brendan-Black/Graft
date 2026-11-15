@@ -1,5 +1,8 @@
 package black.graft.loader;
 
+import black.graft.internal.ErrorCode;
+import black.graft.internal.LoadingException;
+
 import java.io.IOException;
 import java.lang.constant.ClassDesc;
 import java.lang.instrument.Instrumentation;
@@ -12,6 +15,7 @@ import java.util.jar.JarFile;
 import black.graft.Dist;
 import black.graft.Nullable;
 import black.graft.Version;
+import black.graft.internal.GraftRuntime;
 import black.graft.loader.transform.Fatal;
 import black.graft.loader.transform.GraftTransformer;
 import black.graft.loader.transform.MinecraftPatches;
@@ -26,6 +30,7 @@ public final class Agent {
 	private static final String CLIENT_HOOKS = "black.graft.loader.ClientHooks";
 	private static final System.Logger LOG = System.getLogger(black.graft.ModId.GRAFT.value());
 	private static volatile @Nullable Instrumentation launcherInstrumentation;
+	private static volatile List<ModCandidate> mods = List.of();
 
 	private Agent() {}
 
@@ -46,6 +51,11 @@ public final class Agent {
 		launcherInstrumentation = instrumentation;
 	}
 
+	/** The mods Graft started with, and where their files are. */
+	static List<ModCandidate> mods() {
+		return mods;
+	}
+
 	static Instrumentation launcherInstrumentation() {
 		Instrumentation i = launcherInstrumentation;
 		if (i == null) {
@@ -63,9 +73,9 @@ public final class Agent {
 		ClassLoader system = ClassLoader.getSystemClassLoader();
 		Version minecraft = Versions.minecraft(system.getResourceAsStream(Versions.MINECRAFT_RESOURCE));
 		Version graft = Versions.graft(Agent.class.getClassLoader().getResourceAsStream(Versions.GRAFT_RESOURCE));
-		List<ModCandidate> mods = Resolution.resolve(Discovery.discover(environment.modsDir(), environment.devRoots()), minecraft, graft);
+		List<ModCandidate> resolved = Resolution.resolve(Discovery.discover(environment.modsDir(), environment.devRoots()), minecraft, graft);
 
-		for (ModCandidate m : mods) {
+		for (ModCandidate m : resolved) {
 			if (m.kind() == ModCandidate.Kind.JAR) {
 				try {
 					instrumentation.appendToSystemClassLoaderSearch(new JarFile(m.source().toFile()));
@@ -79,10 +89,12 @@ public final class Agent {
 		if (environment.dist() == Dist.CLIENT) {
 			patches.addAll(MinecraftPatches.client(ClassDesc.of(CLIENT_HOOKS)));
 		}
-		ModRuntime runtime = new ModRuntime(environment, mods, minecraft, graft);
-		ModRuntime.install(runtime);
+		GraftRuntime runtime = new GraftRuntime(environment.dist(), environment.configDir(), resolved.stream().map(ModCandidate::info).toList(),
+				ClassLoader.getSystemClassLoader());
+		GraftRuntime.install(runtime);
+		Agent.mods = List.copyOf(resolved);
 		instrumentation.addTransformer(new GraftTransformer(patches));
-		LOG.log(System.Logger.Level.INFO, runtime.summary());
+		LOG.log(System.Logger.Level.INFO, runtime.summary("Graft " + graft + " on Minecraft " + minecraft));
 	}
 
 	static Map<String, String> systemProperties() {

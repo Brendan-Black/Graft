@@ -1,5 +1,8 @@
 package black.graft.loader;
 
+import black.graft.internal.LoadingException;
+import black.graft.internal.Descriptors;
+
 import static black.graft.Check.eq;
 import static black.graft.Check.fails;
 import static black.graft.Check.ok;

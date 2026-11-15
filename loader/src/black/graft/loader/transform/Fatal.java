@@ -2,7 +2,7 @@ package black.graft.loader.transform;
 
 import java.io.PrintStream;
 
-import black.graft.loader.LoadingException;
+import black.graft.internal.LoadingException;
 
 /** Stops the game over a problem that can't be thrown to anyone who would act on it. */
 public final class Fatal {

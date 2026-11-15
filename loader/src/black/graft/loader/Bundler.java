@@ -1,5 +1,8 @@
 package black.graft.loader;
 
+import black.graft.internal.ErrorCode;
+import black.graft.internal.LoadingException;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;

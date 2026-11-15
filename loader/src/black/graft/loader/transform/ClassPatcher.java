@@ -16,8 +16,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import black.graft.loader.ErrorCode;
-import black.graft.loader.LoadingException;
+import black.graft.internal.ErrorCode;
+import black.graft.internal.LoadingException;
 import black.graft.loader.transform.Patch.Injection;
 
 /** Applies patches to a class's bytes. Pure: bytes in, bytes out, so it runs the same in tests as in the game. */

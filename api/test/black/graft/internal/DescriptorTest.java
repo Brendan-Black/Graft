@@ -1,4 +1,4 @@
-package black.graft.loader;
+package black.graft.internal;
 
 import static black.graft.Check.eq;
 import static black.graft.Check.fails;
