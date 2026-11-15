@@ -41,6 +41,7 @@ public final class Hooks {
 
 	/** Start of {@code MinecraftServer.runServer()}. */
 	public static void serverStarting(MinecraftServer server) {
+		GraftRuntime.current().content().checkTestInstances(server.registryAccess());
 		GraftRuntime.current().events().post(new ServerStarting(server));
 	}
 

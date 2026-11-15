@@ -44,29 +44,30 @@ record VersionFile(Download client, List<Download> libraries, String assetIndexI
 
 	static VersionFile parse(String json, Platform platform) {
 		JsonObject v = Json.parseObject(json);
-		String id = v.string("id");
-		JsonObject clientDownload = v.object("downloads").object("client");
-		Download client = new Download(id + "/" + id + "-client.jar", URI.create(clientDownload.string("url")), clientDownload.string("sha1"));
+		String id = v.string(MojangJson.ID);
+		JsonObject clientDownload = v.object(MojangJson.DOWNLOADS).object("client");
+		Download client =
+			new Download(id + "/" + id + "-client.jar", URI.create(clientDownload.string(MojangJson.URL)), clientDownload.string(MojangJson.SHA1));
 
 		List<Download> libraries = new ArrayList<>();
-		for (JsonObject library : v.array("libraries").objects()) {
-			if (!platform.allows(library.member("rules"))) {
+		for (JsonObject library : v.array(MojangJson.LIBRARIES).objects()) {
+			if (!platform.allows(library.member(MojangJson.RULES))) {
 				continue;
 			}
-			JsonObject artifact = library.object("downloads").object("artifact");
-			libraries.add(new Download(artifact.string("path"), URI.create(artifact.string("url")), artifact.string("sha1")));
+			JsonObject artifact = library.object(MojangJson.DOWNLOADS).object("artifact");
+			libraries.add(new Download(artifact.string("path"), URI.create(artifact.string(MojangJson.URL)), artifact.string(MojangJson.SHA1)));
 		}
 
 		JsonObject index = v.object("assetIndex");
-		String indexId = index.string("id");
-		Download assetIndex = new Download("indexes/" + indexId + ".json", URI.create(index.string("url")), index.string("sha1"));
+		String indexId = index.string(MojangJson.ID);
+		Download assetIndex = new Download("indexes/" + indexId + ".json", URI.create(index.string(MojangJson.URL)), index.string(MojangJson.SHA1));
 
 		List<String> jvm = new ArrayList<>();
 		for (Json argument : v.object("arguments").array("jvm").elements()) {
 			switch (argument) {
 				case Json.JsonString s -> jvm.add(s.value());
 				case JsonObject o -> {
-					if (platform.allows(o.member("rules"))) {
+					if (platform.allows(o.member(MojangJson.RULES))) {
 						switch (o.member("value").orElseThrow(() -> new Json.JsonException("a JVM argument has no \"value\""))) {
 							case Json.JsonString s -> jvm.add(s.value());
 							case Json.JsonArray a -> a.elements().forEach(e -> jvm.add(((Json.JsonString) e).value()));

@@ -29,6 +29,8 @@ import black.graft.internal.LoadingException;
  */
 @CacheableTask
 public abstract class GenerateFabricMetadata extends DefaultTask {
+	private static final String FABRIC_MOD_JSON = "fabric.mod.json";
+
 	/** The mod's resource folders; exactly one holds {@code graft.mod.properties}. */
 	@InputFiles
 	@PathSensitive(PathSensitivity.RELATIVE)
@@ -49,8 +51,8 @@ public abstract class GenerateFabricMetadata extends DefaultTask {
 				+ (descriptors.isEmpty() ? "; every Graft mod needs one at the root of its resources" : ": " + descriptors));
 		}
 		Path descriptor = descriptors.getFirst();
-		if (Files.exists(descriptor.resolveSibling("fabric.mod.json"))) {
-			throw new GradleException(descriptor.resolveSibling("fabric.mod.json") + " exists, but Graft writes that file from "
+		if (Files.exists(descriptor.resolveSibling(FABRIC_MOD_JSON))) {
+			throw new GradleException(descriptor.resolveSibling(FABRIC_MOD_JSON) + " exists, but Graft writes that file from "
 				+ Descriptors.FILE_NAME + "; delete it and put what it says in the descriptor");
 		}
 		ModInfo mod;
@@ -61,7 +63,7 @@ public abstract class GenerateFabricMetadata extends DefaultTask {
 		} catch (LoadingException e) {
 			throw new GradleException(String.join("\n", e.problems()), e);
 		}
-		Path out = getOutputDir().get().getAsFile().toPath().resolve("fabric.mod.json");
+		Path out = getOutputDir().get().getAsFile().toPath().resolve(FABRIC_MOD_JSON);
 		try {
 			Files.createDirectories(out.getParent());
 			Files.writeString(out, FabricMetadata.json(mod), StandardCharsets.UTF_8);

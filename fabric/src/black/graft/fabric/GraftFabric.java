@@ -54,7 +54,10 @@ public final class GraftFabric implements ModInitializer {
 			ResourceKey<CreativeModeTab> key = ResourceKey.create(Registries.CREATIVE_MODE_TAB, Identifier.withDefaultNamespace(tab.path()));
 			CreativeModeTabEvents.modifyOutputEvent(key).register(output -> runtime.content().entriesFor(key).forEach(output::accept));
 		}
-		ServerLifecycleEvents.SERVER_STARTING.register(server -> runtime.events().post(new ServerStarting(server)));
+		ServerLifecycleEvents.SERVER_STARTING.register(server -> {
+			runtime.content().checkTestInstances(server.registryAccess());
+			runtime.events().post(new ServerStarting(server));
+		});
 		ServerLifecycleEvents.SERVER_STOPPING.register(server -> runtime.events().post(new ServerStopping(server)));
 		ServerTickEvents.END_SERVER_TICK.register(server -> runtime.events().post(new ServerTick(server)));
 

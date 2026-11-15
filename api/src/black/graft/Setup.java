@@ -1,10 +1,12 @@
 package black.graft;
 
+import java.util.function.Consumer;
 import java.util.function.Function;
 
 import black.graft.config.Config;
 import black.graft.config.ConfigSpec;
 import black.graft.event.Events;
+import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.ItemLike;
@@ -73,6 +75,30 @@ public interface Setup {
 	 * @param item an item or block item this mod declared
 	 */
 	void addToTab(VanillaTab tab, Registered<? extends ItemLike> item);
+
+	/**
+	 * Declares an in-game test, run by Minecraft's GameTest server ({@code gradle gameTest}) and by {@code /test}. Like
+	 * vanilla's, a test is two parts: this function, and a test instance in the mod's data at
+	 * {@code data/<mod id>/test_instance/<name>.json} that says where and how long it runs:
+	 *
+	 * <pre>{@code
+	 * {
+	 * "type": "minecraft:function",
+	 * "function": "<mod id>:<name>",
+	 * "environment": "minecraft:default",
+	 * "structure": "minecraft:empty",
+	 * "max_ticks": 20
+	 * }
+	 * }</pre>
+	 *
+	 * A server checks as it starts that every declared test has its instance, and refuses to start if one doesn't, so a test
+	 * can't be skipped silently.
+	 *
+	 * @param name its name within this mod
+	 * @param test the test: arrange, act, and end with {@code helper.succeed()} or a failed assertion
+	 * @throws IllegalArgumentException if this mod already declared a test by that name
+	 */
+	void gameTest(ContentName name, Consumer<GameTestHelper> test);
 
 	/** Where to listen for game events. */
 	Events events();

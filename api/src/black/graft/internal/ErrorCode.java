@@ -21,6 +21,8 @@ public enum ErrorCode {
 	ENTRYPOINT_FAILED("GRAFT-202"),
 	/** A config file has a value its mod can't use. */
 	BAD_CONFIG("GRAFT-203"),
+	/** A mod declared a game test but its data has no test instance for it. */
+	MISSING_TEST_INSTANCE("GRAFT-204"),
 	/** A Minecraft method Graft patches isn't there, or doesn't look as expected: this Graft is for another version. */
 	PATCH_TARGET_MISSING("GRAFT-301"),
 	/** Patching a Minecraft class failed. */

@@ -13,3 +13,6 @@ run/
 *.iml
 .DS_Store
 Thumbs.db
+
+# Editor build output (VS Code Java)
+bin/

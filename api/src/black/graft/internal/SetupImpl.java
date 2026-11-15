@@ -16,6 +16,7 @@ import black.graft.config.ConfigSpec;
 import black.graft.event.Event;
 import black.graft.event.Events;
 import net.minecraft.core.registries.Registries;
+import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.item.BlockItem;
@@ -32,6 +33,7 @@ final class SetupImpl implements Setup {
 	private final Set<ContentName> blocks = new HashSet<>();
 	private final Set<ContentName> items = new HashSet<>();
 	private final Set<Registered<?>> blocksWithItems = new HashSet<>();
+	private final Set<ContentName> tests = new HashSet<>();
 	private final Events events;
 	private boolean configLoaded;
 
@@ -90,6 +92,15 @@ final class SetupImpl implements Setup {
 	public void addToTab(VanillaTab tab, Registered<? extends ItemLike> item) {
 		window.check("add " + item.id() + " to a creative tab");
 		runtime.content().addToTab(tab, item);
+	}
+
+	@Override
+	public void gameTest(ContentName name, Consumer<GameTestHelper> test) {
+		window.check("declare game test " + name);
+		if (!tests.add(name)) {
+			throw new IllegalArgumentException(mod.id() + " declared game test " + name + " twice");
+		}
+		runtime.content().gameTest(ResourceKey.create(Registries.TEST_FUNCTION, id(name)), test);
 	}
 
 	@Override

@@ -5,12 +5,18 @@ import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Consumer;
 import java.util.function.Function;
 
 import black.graft.ModId;
 import black.graft.Registered;
 import black.graft.VanillaTab;
 import net.minecraft.core.Registry;
+import net.minecraft.core.RegistryAccess;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.gametest.framework.GameTestHelper;
+import net.minecraft.gametest.framework.GameTestInstance;
+import net.minecraft.resources.Identifier;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.item.BlockItem;
@@ -45,6 +51,10 @@ public final class Content {
 
 	private final List<BlockDecl<?>> blocks = new ArrayList<>();
 	private final List<ItemDecl<?>> items = new ArrayList<>();
+
+	private record TestDecl(ResourceKey<Consumer<GameTestHelper>> key, Consumer<GameTestHelper> test) {}
+
+	private final List<TestDecl> tests = new ArrayList<>();
 	private final Map<VanillaTab, List<Registered<? extends ItemLike>>> tabs = new EnumMap<>(VanillaTab.class);
 	private boolean registered;
 
@@ -58,6 +68,10 @@ public final class Content {
 		RegisteredContent<I> handle = new RegisteredContent<>(key);
 		items.add(new ItemDecl<>(key, factory, handle));
 		return handle;
+	}
+
+	void gameTest(ResourceKey<Consumer<GameTestHelper>> key, Consumer<GameTestHelper> test) {
+		tests.add(new TestDecl(key, test));
 	}
 
 	void addToTab(VanillaTab tab, Registered<? extends ItemLike> item) {
@@ -91,6 +105,9 @@ public final class Content {
 		for (ItemDecl<?> i : items) {
 			i.create();
 		}
+		for (TestDecl t : tests) {
+			Registry.register(BuiltInRegistries.TEST_FUNCTION, t.key(), t.test());
+		}
 	}
 
 	/** The mods' entries for a creative tab Minecraft is filling, in the order they were added. */
@@ -112,6 +129,29 @@ public final class Content {
 			}
 		}
 		return entries;
+	}
+
+	/**
+	 * Checks, as a server starts, that every declared game test has a test instance in the loaded data.
+	 *
+	 * @throws LoadingException {@link ErrorCode#MISSING_TEST_INSTANCE} naming each test without one, and the file it needs
+	 */
+	public void checkTestInstances(RegistryAccess registries) {
+		if (tests.isEmpty()) {
+			return;
+		}
+		Registry<GameTestInstance> instances = registries.lookupOrThrow(Registries.TEST_INSTANCE);
+		List<String> missing = new ArrayList<>();
+		for (TestDecl t : tests) {
+			Identifier id = t.key().identifier();
+			if (!instances.containsKey(id)) {
+				missing.add("game test " + id + " has no test instance: add data/" + id.getNamespace() + "/test_instance/" + id.getPath()
+					+ ".json to the mod");
+			}
+		}
+		if (!missing.isEmpty()) {
+			throw new LoadingException(ErrorCode.MISSING_TEST_INSTANCE, missing);
+		}
 	}
 
 	/** The vanilla tabs mods added entries to. */

@@ -1,0 +1,7 @@
+{
+  "type": "minecraft:function",
+  "function": "truezoom:snack_is_food",
+  "environment": "minecraft:default",
+  "structure": "minecraft:empty",
+  "max_ticks": 5
+}

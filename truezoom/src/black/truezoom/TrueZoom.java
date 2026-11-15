@@ -32,5 +32,7 @@ public final class TrueZoom implements Mod {
 
 		setup.addToTab(VanillaTab.BUILDING_BLOCKS, blockItem);
 		setup.addToTab(VanillaTab.FOOD_AND_DRINKS, snack);
+
+		TrueZoomTests.declare(setup, block, blockItem, snack);
 	}
 }

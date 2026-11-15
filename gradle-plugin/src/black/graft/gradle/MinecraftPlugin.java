@@ -2,6 +2,8 @@ package black.graft.gradle;
 
 import java.nio.file.Path;
 
+import black.graft.ModId;
+
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
 import org.gradle.api.file.FileCollection;
@@ -20,7 +22,7 @@ public final class MinecraftPlugin implements Plugin<Project> {
 	@Override
 	public void apply(Project project) {
 		project.getPluginManager().apply(JavaPlugin.class);
-		Path cache = project.getGradle().getGradleUserHomeDir().toPath().resolve("caches").resolve("graft");
+		Path cache = project.getGradle().getGradleUserHomeDir().toPath().resolve("caches").resolve(ModId.GRAFT.value());
 		MinecraftCache.Prepared prepared = new MinecraftCache(cache, Http.jdk()).prepare(Platform.current());
 		FileCollection classpath = project.files(prepared.classPath().stream().map(Path::toFile).toArray());
 		project.getExtensions().add(GraftMinecraftExtension.class, EXTENSION, new GraftMinecraftExtension(classpath, prepared));

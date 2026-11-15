@@ -14,6 +14,8 @@ import black.graft.json.Json.JsonObject;
  * @param arch the JVM's {@code os.arch}
  */
 record Platform(String os, String arch) {
+	private static final String X86 = "x86";
+
 	static Platform current() {
 		String name = System.getProperty("os.name", "").toLowerCase(Locale.ROOT);
 		String os = name.contains("win") ? "windows" : name.contains("mac") ? "osx" : "linux";
@@ -50,11 +52,11 @@ record Platform(String os, String arch) {
 		if (!(osRule.get() instanceof JsonObject o)) {
 			throw new Json.JsonException("\"os\" is " + osRule.get().kind() + ", expected an object");
 		}
-		if (o.member("name").isPresent() && !o.string("name").equals(os)) {
+		if (o.member(MojangJson.NAME).isPresent() && !o.string(MojangJson.NAME).equals(os)) {
 			return false;
 		}
-		if (o.member("arch").isPresent() && o.string("arch").equals("x86")) {
-			return arch.equals("x86") || arch.equals("i386") || arch.equals("i686");
+		if (o.member(MojangJson.ARCH).isPresent() && o.string(MojangJson.ARCH).equals(X86)) {
+			return arch.equals(X86) || arch.equals("i386") || arch.equals("i686");
 		}
 		return true;
 	}

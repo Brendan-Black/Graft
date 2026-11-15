@@ -4,6 +4,8 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
+import black.graft.ModId;
+
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
 import org.gradle.api.artifacts.Configuration;
@@ -23,9 +25,11 @@ import org.gradle.api.tasks.TaskProvider;
  * </ul>
  */
 public final class ModPlugin implements Plugin<Project> {
-	private static final String GROUP = "graft";
+	private static final String GROUP = ModId.GRAFT.value();
+	private static final String SERVER_DIST = "-Dgraft.dist=server";
 	private static final String CLIENT_MAIN = "net.minecraft.client.main.Main";
 	private static final String SERVER_MAIN = "net.minecraft.server.Main";
+	private static final String GAME_TEST_MAIN = "net.minecraft.gametest.Main";
 
 	@Override
 	public void apply(Project project) {
@@ -33,7 +37,7 @@ public final class ModPlugin implements Plugin<Project> {
 		GraftMinecraftExtension minecraft = project.getExtensions().getByType(GraftMinecraftExtension.class);
 		MinecraftCache.Prepared prepared = minecraft.prepared();
 
-		Configuration graft = project.getConfigurations().create("graft", c -> {
+		Configuration graft = project.getConfigurations().create(GROUP, c -> {
 			c.setDescription("The Graft loader this mod compiles against and runs with.");
 			c.setCanBeConsumed(false);
 			c.setTransitive(false);
@@ -89,10 +93,26 @@ public final class ModPlugin implements Plugin<Project> {
 			t.classpath(minecraft.getClasspath(), main.getRuntimeClasspath());
 			t.getMainClass().set(SERVER_MAIN);
 			t.setWorkingDir(serverDir);
-			t.jvmArgs("-Dgraft.dist=server", "-Dgraft.dev.mods=" + resources.getAbsolutePath());
+			t.jvmArgs(SERVER_DIST, "-Dgraft.dev.mods=" + resources.getAbsolutePath());
 			t.args("--nogui");
 			t.setStandardInput(System.in);
 		});
+
+		// Minecraft's GameTest server: a real, headless server that runs every test instance in the loaded data and exits with
+		// the number of required tests that failed. No EULA: it's Mojang's own tool for testing.
+		File gameTestDir = project.getLayout().getBuildDirectory().dir("gametest").get().getAsFile();
+		TaskProvider<RunGame> gameTest = project.getTasks().register("gameTest", RunGame.class, t -> {
+			t.setGroup("verification");
+			t.setDescription("Runs this mod's game tests on Minecraft's GameTest server, with Graft.");
+			t.dependsOn(main.getClassesTaskName());
+			t.getAgent().from(graft);
+			t.classpath(minecraft.getClasspath(), main.getRuntimeClasspath());
+			t.getMainClass().set(GAME_TEST_MAIN);
+			t.setWorkingDir(gameTestDir);
+			t.jvmArgs(SERVER_DIST, "-Dgraft.dev.mods=" + resources.getAbsolutePath());
+			t.args("--universe", new File(gameTestDir, "universe").getAbsolutePath(), "--report", new File(gameTestDir, "report.xml").getAbsolutePath());
+		});
+		project.getTasks().named("check", c -> c.dependsOn(gameTest));
 	}
 
 	/** The JVM arguments Mojang's launcher passes on this machine, with its placeholders filled in for a development run. */
@@ -100,7 +120,7 @@ public final class ModPlugin implements Plugin<Project> {
 		String natives = new File(runDir, "natives").getAbsolutePath();
 		List<String> out = new ArrayList<>();
 		for (String a : prepared.version().jvmArguments()) {
-			out.add(a.replace("${natives_directory}", natives).replace("${launcher_name}", "graft").replace("${launcher_version}", "dev"));
+			out.add(a.replace("${natives_directory}", natives).replace("${launcher_name}", GROUP).replace("${launcher_version}", "dev"));
 		}
 		return out;
 	}

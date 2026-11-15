@@ -16,7 +16,7 @@ import java.util.regex.Pattern;
  * once it has been checked, so a file in the cache is a checked file, and is never fetched again.
  */
 final class Downloads {
-	private static final Pattern SHA1 = Pattern.compile("[0-9a-f]{40}");
+	static final Pattern SHA1 = Pattern.compile("[0-9a-f]{40}");
 	private final Http http;
 
 	Downloads(Http http) {

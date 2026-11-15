@@ -20,6 +20,8 @@ final class MinecraftCache {
 	static final URI VERSION_FILE = URI.create("https://piston-meta.mojang.com/v1/packages/9f67e10ed013deeaad20ac3c800652765d493408/26.3.json");
 	static final String VERSION_FILE_SHA1 = "9f67e10ed013deeaad20ac3c800652765d493408";
 
+	private static final String VERSIONS = "versions";
+
 	private final Path root;
 	private final Downloads downloads;
 
@@ -35,12 +37,12 @@ final class MinecraftCache {
 	 */
 	Prepared prepare(Platform platform) {
 		try {
-			Path versionFile = downloads.fetch(VERSION_FILE, VERSION_FILE_SHA1, root.resolve("versions").resolve(MINECRAFT_VERSION + ".json"));
+			Path versionFile = downloads.fetch(VERSION_FILE, VERSION_FILE_SHA1, root.resolve(VERSIONS).resolve(MINECRAFT_VERSION + ".json"));
 			VersionFile version = VersionFile.parse(Files.readString(versionFile, StandardCharsets.UTF_8), platform);
 			List<Path> classPath = new ArrayList<>();
-			classPath.add(downloads.fetch(version.client().uri(), version.client().sha1(), root.resolve("versions").resolve(version.client().path())));
+			classPath.add(downloads.fetch(version.client().uri(), version.client().sha1(), root.resolve(VERSIONS).resolve(version.client().path())));
 			for (VersionFile.Download library : version.libraries()) {
-				classPath.add(downloads.fetch(library.uri(), library.sha1(), root.resolve("libraries").resolve(library.path())));
+				classPath.add(downloads.fetch(library.uri(), library.sha1(), root.resolve(MojangJson.LIBRARIES).resolve(library.path())));
 			}
 			return new Prepared(version, classPath, root.resolve("assets"));
 		} catch (IOException e) {

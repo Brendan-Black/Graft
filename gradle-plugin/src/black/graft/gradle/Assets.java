@@ -32,7 +32,7 @@ final class Assets {
 	 */
 	static int fetch(Downloads downloads, VersionFile.Download index, Path assetsDir) throws IOException {
 		Path indexFile = downloads.fetch(index.uri(), index.sha1(), assetsDir.resolve(index.path()));
-		JsonObject objects = Json.parseObject(Files.readString(indexFile, StandardCharsets.UTF_8)).object("objects");
+		JsonObject objects = Json.parseObject(Files.readString(indexFile, StandardCharsets.UTF_8)).object(MojangJson.OBJECTS);
 
 		List<String> hashes = new ArrayList<>();
 		for (Map.Entry<String, Json> e : objects.members().entrySet()) {
@@ -74,9 +74,9 @@ final class Assets {
 	}
 
 	private static Path objectPath(Path assetsDir, String hash) throws IOException {
-		if (!hash.matches("[0-9a-f]{40}")) {
+		if (!Downloads.SHA1.matcher(hash).matches()) {
 			throw new IOException("not an asset hash: " + hash);
 		}
-		return assetsDir.resolve("objects").resolve(hash.substring(0, 2)).resolve(hash);
+		return assetsDir.resolve(MojangJson.OBJECTS).resolve(hash.substring(0, 2)).resolve(hash);
 	}
 }
