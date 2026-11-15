@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "": [
+      { "model": "truezoom:block/zoom_block" },
+      { "model": "truezoom:block/zoom_block", "y": 90 },
+      { "model": "truezoom:block/zoom_block", "y": 180 },
+      { "model": "truezoom:block/zoom_block", "y": 270 }
+    ]
+  }
+}

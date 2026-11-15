@@ -1,0 +1,15 @@
+# Build output
+build/
+.gradle/
+out/
+*.class
+
+# Game run folders (runClient, runServer)
+run/
+
+# Editors / OS
+.vscode/
+.idea/
+*.iml
+.DS_Store
+Thumbs.db
