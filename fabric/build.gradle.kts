@@ -30,7 +30,7 @@ java {
 }
 
 // The API and black-java's lib go inside the jar, as in Graft's own loader: one jar to install.
-val bundled: Configuration by configurations.creating {
+val bundled = configurations.create("bundled") {
     isTransitive = false
 }
 configurations.compileOnly { extendsFrom(bundled) }
@@ -94,3 +94,41 @@ publishing {
         }
     }
 }
+
+// The game tests, on Fabric: Fabric Loader and Fabric API, Graft for Fabric, and the same True Zoom and test mod jars
+// that gameTest runs on Graft's loader, on Minecraft's GameTest server (see ServerMainMixin). check runs it.
+val fabricLauncher = configurations.create("fabricLauncher") { isTransitive = false }
+val fabricMods = configurations.create("fabricMods") { isTransitive = false }
+dependencies {
+    fabricLauncher("net.fabricmc:fabric-loader:0.20.1")
+    fabricLauncher("net.fabricmc:sponge-mixin:0.17.5+mixin.0.8.7")
+    for (asm in listOf("asm", "asm-analysis", "asm-commons", "asm-tree", "asm-util")) fabricLauncher("org.ow2.asm:$asm:9.10.1")
+    fabricMods("net.fabricmc.fabric-api:fabric-api:0.166.2+26.3")
+    fabricMods(project(":truezoom"))
+    fabricMods(project(":testmod"))
+}
+val minecraft = extensions.getByType<black.graft.gradle.GraftMinecraftExtension>()
+val gameTestDir = layout.buildDirectory.dir("gametest")
+val gameTest = tasks.register<JavaExec>("gameTest") {
+    description = "Runs True Zoom's and the test mod's game tests on Fabric, through Graft for Fabric."
+    group = "verification"
+    val mods = files(fabricMods, tasks.jar)
+    val clientJar = minecraft.clientJar
+    inputs.files(mods)
+    classpath = fabricLauncher + minecraft.classpath.filter { it != clientJar }
+    mainClass = "net.fabricmc.loader.impl.launch.knot.KnotServer"
+    javaLauncher = javaToolchains.launcherFor(java.toolchain)
+    val dir = gameTestDir.get().asFile
+    workingDir = dir
+    doFirst { dir.mkdirs() }
+    jvmArgumentProviders.add(CommandLineArgumentProvider {
+        listOf(
+            "-Dgraft.gameTestServer=true",
+            "-Dfabric.side=server",
+            "-Dfabric.gameJarPath=" + clientJar.absolutePath,
+            "-Dfabric.addMods=" + mods.files.joinToString(File.pathSeparator) { it.absolutePath },
+        )
+    })
+    args("--universe", dir.resolve("universe").absolutePath, "--report", dir.resolve("report.xml").absolutePath)
+}
+tasks.check { dependsOn(gameTest) }

@@ -16,6 +16,7 @@ JDK 25, or let Gradle download it.
 ./gradlew -p gradle-plugin check   # the same for the Gradle plugin
 ./gradlew format                   # formats every Java file
 ./gradlew :truezoom:runClient      # the game, with True Zoom
+./gradlew gameTest                 # game tests in a real world: True Zoom's and the test mod's, on Graft and on Fabric
 ```
 
 The first build fetches Minecraft 26.3 from Mojang into Gradle's cache. After that, builds work offline.
@@ -44,5 +45,10 @@ There's no framework: each module's `AllTests` runs groups of checks from `Check
 plugin's network goes through the `Http` seam, with a strict `PseudoHttp` behind it in tests. `MinecraftPatchesTest`
 reads the Minecraft jars the build already fetched to compile against. It applies every patch and runs the JVM verifier,
 and it never loads the game.
+
+In-game behaviour is tested with game tests on Minecraft's GameTest server. `testmod/` is a mod that exercises Graft's
+API and is never published. Its tests and True Zoom's run on Graft's loader (`:testmod:gameTest`, `:truezoom:gameTest`)
+and on Fabric through Graft for Fabric (`:fabric:gameTest`). `check` runs all three, so the two platforms are held to the
+same behaviour.
 
 Every bug fixed gets a check that would have caught it.

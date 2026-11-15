@@ -1,5 +1,7 @@
 package black.graft.gradle;
 
+import java.io.File;
+
 import org.gradle.api.file.FileCollection;
 
 /**
@@ -18,6 +20,11 @@ public final class GraftMinecraftExtension {
 	/** The client jar, then its libraries for this machine. */
 	public FileCollection getClasspath() {
 		return classpath;
+	}
+
+	/** The client jar alone, which a Fabric run names as the game jar. */
+	public File getClientJar() {
+		return prepared.classPath().getFirst().toFile();
 	}
 
 	/** The Minecraft version, {@code 26.3}. */

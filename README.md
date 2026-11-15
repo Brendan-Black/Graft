@@ -152,6 +152,14 @@ public final class ExampleClient implements ClientMod {
 
 [True Zoom](truezoom/src/black/truezoom) is a complete, small mod to start from.
 
+### Testing in game
+
+`setup.gameTest(name, helper -> { ... })` declares a test that runs in a real world, with a test instance at
+`data/<id>/test_instance/<name>.json`, as vanilla's tests have. `./gradlew gameTest` runs them on Minecraft's own
+GameTest server, headless, with your mod loaded through Graft, and `check` runs `gameTest`. A server refuses to start
+when a declared test has no instance (GRAFT-204), so no test is skipped silently. See
+[True Zoom's tests](truezoom/src/black/truezoom/TrueZoomTests.java).
+
 ### The API
 
 Everything a mod uses is in `black.graft` and below. Each type's Javadoc is the reference.
@@ -169,6 +177,7 @@ Everything a mod uses is in `black.graft` and below. Each type's Javadoc is the 
 | `event.Events`, `event.Event` | Listening; `ServerStarting`, `ServerStopping`, `ServerTick`, `client.ClientTick` |
 | `client.KeyBinding`, `client.FovModifier` | A declared key; a field-of-view step |
 | `config.Config`, `ConfigSpec`, `Setting` | Typed settings in `config/<id>.properties`, checked on load |
+| `Setup.gameTest` | In-game tests, run by `gradle gameTest` on Minecraft's GameTest server |
 
 The API keeps a few promises. Nothing in it returns null; what may be absent is an `Optional`. Every value is checked
 when it's made: a `ModId`, a `VersionRange` or a `Setting` can't hold something invalid. Declarations are accepted only
@@ -214,7 +223,7 @@ fails, not your game.
 | `core.registries.BuiltInRegistries` | `freeze()` | start | creating mods' blocks and items |
 | `world.item.CreativeModeTab` | `buildContents(...)` | after the vanilla generator | creative tab entries |
 | `server.packs.repository.PackRepository` | constructor | start | mod assets and data as packs |
-| `server.MinecraftServer` | `runServer()` | start | `ServerStarting` |
+| `server.MinecraftServer` | `runServer()` | before it calls `initServer()`, inside its crash handling | `ServerStarting` |
 | `server.MinecraftServer` | `stopServer()` | start | `ServerStopping` |
 | `server.MinecraftServer` | `tickServer(...)` | every return | `ServerTick` |
 | `client.Options` | constructor | after `keyMappings` is set | key bindings, before saved keys load |
@@ -242,6 +251,7 @@ Graft refuses to start a game it can't run properly, and says why with a code:
 | GRAFT-201 | A mod's entrypoint class is missing or wrong | A bug in the mod: report it to its author |
 | GRAFT-202 | A mod failed while setting up | A bug in the mod: the cause follows |
 | GRAFT-203 | A config file has a value its mod can't use | Each key, value and accepted range is listed; fix or delete the line |
+| GRAFT-204 | A mod declares a game test with no test instance | A bug in the mod: the message names the file to add |
 | GRAFT-301 | A method Graft patches isn't there | This Graft is for another Minecraft version |
 | GRAFT-302 | Patching a class failed | A bug in Graft: please report it |
 | GRAFT-401 | No server jar, or not a Minecraft server bundle | Download `server.jar` from minecraft.net, or use `--server-jar` |

@@ -1,0 +1,7 @@
+{
+  "type": "minecraft:function",
+  "function": "graft_testmod:creative_tab_lists_item",
+  "environment": "minecraft:default",
+  "structure": "minecraft:empty",
+  "max_ticks": 5
+}

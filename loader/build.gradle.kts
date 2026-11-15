@@ -25,7 +25,7 @@ java {
 }
 
 // The API and black-java's lib (black.TypedString) go inside the jar: the game runs Graft as a single agent jar.
-val bundled: Configuration by configurations.creating {
+val bundled = configurations.create("bundled") {
     isTransitive = false
 }
 configurations.compileOnly { extendsFrom(bundled) }

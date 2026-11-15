@@ -4,5 +4,6 @@
   "package": "black.graft.fabric.mixin",
   "compatibilityLevel": "JAVA_21",
   "client": ["CameraMixin"],
+  "server": ["ServerMainMixin"],
   "injectors": { "defaultRequire": 1 }
 }

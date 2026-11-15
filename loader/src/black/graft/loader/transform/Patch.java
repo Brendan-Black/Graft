@@ -39,6 +39,16 @@ public record Patch(String owner, String method, String descriptor, String why, 
 		record AfterFieldWrite(Opcode op, String fieldOwner, String name) implements Injection {}
 
 		/**
+		 * Straight before a call to a method, with its arguments already on the stack: the code must leave the stack as it
+		 * found it.
+		 *
+		 * @param methodOwner the called method's class or interface, in internal form
+		 * @param name        the called method's name
+		 * @param descriptor  the called method's descriptor
+		 */
+		record BeforeInvoke(String methodOwner, String name, String descriptor) implements Injection {}
+
+		/**
 		 * Straight after a call to a method.
 		 *
 		 * @param methodOwner the called method's class or interface, in internal form

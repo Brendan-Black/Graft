@@ -50,6 +50,8 @@ public final class PatcherTest {
 					.putfield(TARGET, "values", INT_ARRAY)),
 			new Patch("graft/test/Target", "start", "()V", "after a call", new Injection.AfterInvoke("graft/test/Target", "step", "()V"),
 				code -> code.ldc("after step").invokestatic(RECORDER, "note", MethodTypeDesc.of(CD_void, ClassDesc.of("java.lang.String")))),
+			new Patch("graft/test/Target", "start", "()V", "before a call", new Injection.BeforeInvoke("graft/test/Target", "step", "()V"),
+				code -> code.ldc("before step").invokestatic(RECORDER, "note", MethodTypeDesc.of(CD_void, ClassDesc.of("java.lang.String")))),
 			new Patch("graft/test/Target", "fov", "(ZF)F", "wrapping every returned float", new Injection.BeforeReturns(),
 				code -> code.fload(2).invokestatic(RECORDER, "scale", MethodTypeDesc.of(CD_float, CD_float, CD_float))));
 
@@ -67,7 +69,7 @@ public final class PatcherTest {
 		eq(List.of(1, 2, 99), box(values), "the constructor's array went through the hook");
 
 		c.getMethod("start").invoke(target);
-		eq(List.of("head", "step ran", "after step"), Recorder.notes(), "head hook first, then vanilla, then the after-call hook");
+		eq(List.of("head", "before step", "step ran", "after step"), Recorder.notes(), "head hook, before-call hook, vanilla, after-call hook");
 
 		Method fov = c.getMethod("fov", boolean.class, float.class);
 		eq(35f, fov.invoke(target, true, 0.5f), "the first return's value is wrapped (70 * 0.5)");

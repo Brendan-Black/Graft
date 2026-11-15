@@ -104,6 +104,13 @@ public final class ClassPatcher {
 						inject(code);
 					}
 				}
+				case Injection.BeforeInvoke i -> {
+					if (element instanceof InvokeInstruction ii && ii.owner().asInternalName().equals(i.methodOwner())
+						&& ii.name().equalsString(i.name()) && ii.type().equalsString(i.descriptor())) {
+						inject(code);
+					}
+					code.with(element);
+				}
 				case Injection.AfterInvoke i -> {
 					code.with(element);
 					if (element instanceof InvokeInstruction ii && ii.owner().asInternalName().equals(i.methodOwner())
