@@ -81,6 +81,7 @@ publishing {
     publications {
         create<MavenPublication>("maven") {
             artifactId = "neoforge"
+            version = providers.environmentVariable("VERSION").getOrElse(project.version.toString()) // the tag as written, which JitPack serves
             from(components["java"])
             pom {
                 name = "Graft for NeoForge"

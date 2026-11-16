@@ -18,7 +18,7 @@ group = "com.github.Brendan-Black.Graft"
 version = providers.environmentVariable("VERSION")
     .orElse(providers.fileContents(layout.projectDirectory.file("../gradle.properties")).asText.map { text ->
         Regex("(?m)^graftVersion=(.+)$").find(text)?.groupValues?.get(1)?.trim() ?: error("graftVersion missing from gradle.properties")
-    }).get().removePrefix("v")
+    }).get() // the tag as written, which JitPack serves; the plugin never reads its own version
 
 java {
     toolchain.languageVersion = JavaLanguageVersion.of(25)
