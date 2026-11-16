@@ -33,7 +33,7 @@ configurations.testImplementation { extendsFrom(bundled) }
 
 dependencies {
     bundled(project(":api"))
-    bundled("com.github.Brendan-Black.black-java:lib:1.3.2")
+    bundled("com.github.Brendan-Black.black-java:lib:1.3.4")
     errorprone("com.google.errorprone:error_prone_core:2.52.0")
     errorprone("com.uber.nullaway:nullaway:0.14.3")
 }
