@@ -7,8 +7,6 @@ pluginManagement {
     resolutionStrategy.eachPlugin {
         if (requested.id.id == "black.java-standards") useModule("com.github.Brendan-Black.black-java:plugin:${requested.version}")
     }
-    // With https://github.com/Brendan-Black/black-java checked out next to Graft, that checkout is used instead.
-    if (file("../../black-java/settings.gradle.kts").exists()) includeBuild("../../black-java")
 }
 
 plugins {

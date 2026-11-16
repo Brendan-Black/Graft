@@ -7,8 +7,6 @@ pluginManagement {
     resolutionStrategy.eachPlugin {
         if (requested.id.id == "black.java-standards") useModule("com.github.Brendan-Black.black-java:plugin:${requested.version}")
     }
-    // With https://github.com/Brendan-Black/black-java checked out next to this project, that checkout is used instead.
-    if (file("../black-java/settings.gradle.kts").exists()) includeBuild("../black-java")
     // Graft's own Gradle plugins, which the loader and True Zoom build with.
     includeBuild("gradle-plugin")
 }
