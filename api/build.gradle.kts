@@ -26,7 +26,7 @@ java {
 
 // What mods compile against. Every platform (Graft's agent, Graft for Fabric) carries these classes inside its own jar.
 dependencies {
-    api("com.github.Brendan-Black.black-java:lib:1.3.0")
+    api("com.github.Brendan-Black.black-java:lib:1.3.2")
     errorprone("com.google.errorprone:error_prone_core:2.52.0")
     errorprone("com.uber.nullaway:nullaway:0.14.3")
 }
