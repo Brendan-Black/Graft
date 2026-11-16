@@ -27,7 +27,7 @@ This repository holds:
 | [`fabric/`](fabric) | Graft for Fabric: a Fabric mod that runs Graft mods on Fabric |
 | [`neoforge/`](neoforge) | Graft for NeoForge: a NeoForge mod that runs Graft mods on NeoForge |
 | [`gradle-plugin/`](gradle-plugin) | `black.graft.mod`: puts Minecraft on a mod's compile class path and adds `runClient`/`runServer` |
-| [`truezoom/`](truezoom) | True Zoom, the reference mod: hold C to zoom, plus a block and a snack |
+| [`truezoom/`](truezoom) | True Zoom, the reference mod: hold C to zoom, double-tap and hold it to rush ahead, plus a block and a snack |
 
 ## Playing with mods
 
