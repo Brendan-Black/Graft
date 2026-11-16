@@ -15,6 +15,8 @@ public enum ErrorCode {
 	WRONG_VERSION("GRAFT-104"),
 	/** A file in the mods folder can't be opened as a jar. */
 	BAD_JAR("GRAFT-105"),
+	/** A server refused a client whose mods aren't the server's. The server stays up; the client is told what to install. */
+	MODS_DIFFER("GRAFT-106"),
 	/** A mod's entrypoint class is missing, isn't a {@code Mod}/{@code ClientMod}, or can't be constructed. */
 	BAD_ENTRYPOINT("GRAFT-201"),
 	/** A mod's entrypoint threw while it was setting up. */

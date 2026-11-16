@@ -9,7 +9,7 @@
 
 **A small, free Minecraft mod loader in pure JDK 25: one Java agent, a documented API, and no third-party code.**
 
-Since 26.1, Minecraft ships with its real class and method names. Graft builds on that: it patches ten methods
+Since 26.1, Minecraft ships with its real class and method names. Graft builds on that: it patches twelve methods
 with the JDK's own ClassFile API as the game loads them, and gives mods a short API for blocks, items, creative tabs,
 events, key bindings, the field of view, config files and their own assets and data. Nothing is remapped, decompiled or
 redistributed. Mods compile against Mojang's own jar.
@@ -55,7 +55,9 @@ else is passed to Minecraft.
 **On Fabric.** Install Fabric Loader 0.20.1+ and Fabric API for 26.3 as usual, then put `graft-fabric.jar` and the Graft
 mods in `mods/`, with any Fabric mods you like.
 
-**Clients and servers need the same mods.** Graft 0.1 doesn't check this when you join: see [the roadmap](#parity).
+**Clients and servers need the same mods**, at the same versions: blocks and items travel between them as numbers, so
+anything else would show the wrong blocks. A Graft server refuses a player whose mods differ, and tells them which mods
+and versions to install (GRAFT-106). On Fabric, Fabric API's registry sync does this job.
 
 ## Making a mod
 
@@ -205,7 +207,7 @@ mods need:
 | Runs alongside the other loader's mods | — | — | Fabric mods, through Graft for Fabric; NeoForge next |
 | Bytecode changes by mods | coremods, mixins | mixins | roadmap: a public patch API |
 | Networking, custom packets | ✓ | ✓ | roadmap |
-| Join check: same mods on both ends | ✓ | ✓ | roadmap |
+| Join check: same mods on both ends | ✓ | ✓ | ✓, on Graft's loader; on Fabric, Fabric API's |
 | Other registries (entities, menus…) | ✓ | ✓ | roadmap; data-driven ones work through data packs |
 | Data generation, jar-in-jar, mod list screen | ✓ | ✓ | roadmap |
 
@@ -229,6 +231,8 @@ fails, not your game.
 | `client.Options` | constructor | after `keyMappings` is set | key bindings, before saved keys load |
 | `client.Camera` | `calculateFov(float)` | every return | field-of-view steps |
 | `client.Minecraft` | `tick()` | every return | `ClientTick` |
+| `server.network.ServerHandshakePacketListenerImpl` | `beginLogin(...)` | return | refusing a player whose mods differ |
+| `network.Connection` | `initiateServerboundConnection(...)` | start | sending the client's mod fingerprint with its handshake |
 
 ## Publishing Graft mods
 
@@ -248,6 +252,7 @@ Graft refuses to start a game it can't run properly, and says why with a code:
 | GRAFT-103 | A mod needs a mod that isn't installed | Install it, at a version in the range shown |
 | GRAFT-104 | A mod needs another version of a mod, Minecraft or Graft | Update or downgrade as shown |
 | GRAFT-105 | A file in `mods/` isn't a readable jar | Download it again |
+| GRAFT-106 | A server refused you: your mods aren't its mods | Install exactly the mods and versions the message lists, and no others |
 | GRAFT-201 | A mod's entrypoint class is missing or wrong | A bug in the mod: report it to its author |
 | GRAFT-202 | A mod failed while setting up | A bug in the mod: the cause follows |
 | GRAFT-203 | A config file has a value its mod can't use | Each key, value and accepted range is listed; fix or delete the line |

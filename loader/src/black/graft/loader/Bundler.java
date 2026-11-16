@@ -135,13 +135,17 @@ public final class Bundler {
 		}
 	}
 
-	static String sha256(Path file) throws IOException {
-		MessageDigest digest;
+	/** A new SHA-256 digest, which every JDK has. */
+	static MessageDigest newSha256() {
 		try {
-			digest = MessageDigest.getInstance("SHA-256");
+			return MessageDigest.getInstance("SHA-256");
 		} catch (NoSuchAlgorithmException e) {
 			throw new IllegalStateException("every JDK has SHA-256", e);
 		}
+	}
+
+	static String sha256(Path file) throws IOException {
+		MessageDigest digest = newSha256();
 		try (InputStream in = Files.newInputStream(file)) {
 			byte[] buffer = new byte[1 << 16];
 			for (int n; (n = in.read(buffer)) > 0;) {

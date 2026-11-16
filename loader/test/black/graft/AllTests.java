@@ -2,6 +2,7 @@ package black.graft;
 
 import black.graft.loader.BundlerTest;
 import black.graft.loader.DiscoveryTest;
+import black.graft.loader.JoinCheckTest;
 import black.graft.loader.ResolutionTest;
 import black.graft.loader.StartupTest;
 import black.graft.loader.transform.MinecraftPatchesTest;
@@ -16,6 +17,7 @@ public final class AllTests {
 		Check.group("resolution (duplicates, dependencies, versions)", ResolutionTest::run);
 		Check.group("startup (environment, versions)", StartupTest::run);
 		Check.group("server bundle unpacking", BundlerTest::run);
+		Check.group("join check (same mods on both ends)", JoinCheckTest::run);
 		Check.group("patcher (synthetic classes, run for real)", PatcherTest::run);
 		Check.group("Minecraft 26.3 patches (real jars, JVM verifier)", MinecraftPatchesTest::run);
 		System.exit(Check.summary());

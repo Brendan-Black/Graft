@@ -7,7 +7,11 @@ import black.graft.internal.GraftRuntime;
 import black.graft.event.ServerStarting;
 import black.graft.event.ServerStopping;
 import black.graft.event.ServerTick;
+import net.minecraft.network.Connection;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.protocol.handshake.ClientIntentionPacket;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.network.ServerLoginPacketListenerImpl;
 import net.minecraft.server.packs.repository.RepositorySource;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.ItemStack;
@@ -48,6 +52,16 @@ public final class Hooks {
 	/** Start of {@code MinecraftServer.stopServer()}. */
 	public static void serverStopping(MinecraftServer server) {
 		GraftRuntime.current().events().post(new ServerStopping(server));
+	}
+
+	/**
+	 * End of {@code ServerHandshakePacketListenerImpl.beginLogin(...)}, once the login listener is set up: refuse a client whose
+	 * mods aren't this server's, the way vanilla refuses a login.
+	 */
+	public static void loginStarted(Connection connection, ClientIntentionPacket handshake) {
+		if (connection.isConnected() && connection.getPacketListener() instanceof ServerLoginPacketListenerImpl login) {
+			JoinCheck.refusal(handshake.hostName(), GraftRuntime.current().mods()).ifPresent(why -> login.disconnect(Component.literal(why)));
+		}
 	}
 
 	/** End of {@code MinecraftServer.tickServer(...)}. */

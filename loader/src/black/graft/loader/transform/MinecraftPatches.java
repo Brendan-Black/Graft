@@ -1,6 +1,7 @@
 package black.graft.loader.transform;
 
 import static java.lang.constant.ConstantDescs.CD_Collection;
+import static java.lang.constant.ConstantDescs.CD_String;
 import static java.lang.constant.ConstantDescs.CD_float;
 import static java.lang.constant.ConstantDescs.CD_void;
 import static java.lang.constant.ConstantDescs.INIT_NAME;
@@ -31,6 +32,11 @@ public final class MinecraftPatches {
 	private static final ClassDesc OPTIONS = ClassDesc.ofInternalName(OPTIONS_CLASS);
 	private static final ClassDesc KEY_MAPPINGS = ClassDesc.ofInternalName("net/minecraft/client/KeyMapping").arrayType();
 	private static final String KEY_MAPPINGS_FIELD = "keyMappings";
+	private static final String HANDSHAKE_CLASS = "net/minecraft/server/network/ServerHandshakePacketListenerImpl";
+	private static final String CONNECTION_CLASS = "net/minecraft/network/Connection";
+	private static final ClassDesc CONNECTION = ClassDesc.ofInternalName(CONNECTION_CLASS);
+	private static final ClassDesc CLIENT_INTENTION_PACKET = ClassDesc.ofInternalName("net/minecraft/network/protocol/handshake/ClientIntentionPacket");
+	private static final ClassDesc CLIENT_INTENT = ClassDesc.ofInternalName("net/minecraft/network/protocol/handshake/ClientIntent");
 
 	private MinecraftPatches() {}
 
@@ -71,7 +77,14 @@ public final class MinecraftPatches {
 				code -> code.aload(0).invokestatic(hooks, "serverStopping", MethodTypeDesc.of(CD_void, MINECRAFT_SERVER))),
 			new Patch(SERVER_CLASS, "tickServer", "(Ljava/util/function/BooleanSupplier;)V",
 				"the ServerTick event", new Injection.BeforeReturns(),
-				code -> code.aload(0).invokestatic(hooks, "serverTick", MethodTypeDesc.of(CD_void, MINECRAFT_SERVER))));
+				code -> code.aload(0).invokestatic(hooks, "serverTick", MethodTypeDesc.of(CD_void, MINECRAFT_SERVER))),
+			new Patch(HANDSHAKE_CLASS, "beginLogin", "(Lnet/minecraft/network/protocol/handshake/ClientIntentionPacket;Z)V",
+				"refusing a client whose mods aren't the server's", new Injection.BeforeReturns(),
+				// local 1 is the handshake, whose host name carries the client's fingerprint
+				code -> code.aload(0)
+					.getfield(ClassDesc.ofInternalName(HANDSHAKE_CLASS), "connection", CONNECTION)
+					.aload(1)
+					.invokestatic(hooks, "loginStarted", MethodTypeDesc.of(CD_void, CONNECTION, CLIENT_INTENTION_PACKET))));
 	}
 
 	/**
@@ -95,6 +108,11 @@ public final class MinecraftPatches {
 				code -> code.fload(1).invokestatic(clientHooks, "modifyFov", MethodTypeDesc.of(CD_float, CD_float, CD_float))),
 			new Patch(MINECRAFT_CLASS, "tick", NO_ARGS_VOID,
 				"the ClientTick event", new Injection.BeforeReturns(),
-				code -> code.aload(0).invokestatic(clientHooks, "clientTick", MethodTypeDesc.of(CD_void, MINECRAFT))));
+				code -> code.aload(0).invokestatic(clientHooks, "clientTick", MethodTypeDesc.of(CD_void, MINECRAFT))),
+			new Patch(CONNECTION_CLASS, "initiateServerboundConnection",
+				"(Ljava/lang/String;ILnet/minecraft/network/ProtocolInfo;Lnet/minecraft/network/ProtocolInfo;Lnet/minecraft/network/ClientboundPacketListener;Lnet/minecraft/network/protocol/handshake/ClientIntent;)V",
+				"sending the fingerprint of the client's mods to the server", new Injection.AtHead(),
+				// local 1 is the host name, local 6 the intent
+				code -> code.aload(1).aload(6).invokestatic(clientHooks, "markHostName", MethodTypeDesc.of(CD_String, CD_String, CLIENT_INTENT)).astore(1)));
 	}
 }
