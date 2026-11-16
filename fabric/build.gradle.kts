@@ -38,7 +38,7 @@ configurations.compileOnly { extendsFrom(bundled) }
 // Fabric's own pieces are provided by Fabric at run time, so they're compile-only here.
 dependencies {
     bundled(project(":api"))
-    bundled("com.github.Brendan-Black.black-java:lib:1.3.4")
+    bundled("com.github.Brendan-Black.black-java:lib:1.3.5")
     compileOnly("net.fabricmc:fabric-loader:0.20.1")
     compileOnly("net.fabricmc:sponge-mixin:0.17.5+mixin.0.8.7")
     compileOnly("net.fabricmc.fabric-api:fabric-api-base:2.0.6+fcdff87f5d")
