@@ -92,8 +92,8 @@ publishing {
     }
 }
 
-// The game tests, on NeoForge: NeoForge's own server install, Graft for NeoForge, and the same True Zoom and test mod
-// jars that gameTest runs on Graft's loader and on Fabric, on Minecraft's GameTest server. check runs it.
+// The game tests, on NeoForge: NeoForge's own server install, Graft for NeoForge, and the same test mod
+// jar that gameTest runs on Graft's loader and on Fabric, on Minecraft's GameTest server. check runs it.
 //
 // NeoForge ticks game tests only outside production (GameTestHooks.isGametestEnabled), and it decides it's in
 // production unless Minecraft and NeoForge are on the class path, as its dev tooling puts them. So this launches the
@@ -104,7 +104,6 @@ val neoForgeInstaller = configurations.create("neoForgeInstaller") { isTransitiv
 val neoForgeMods = configurations.create("neoForgeMods") { isTransitive = false }
 dependencies {
     neoForgeInstaller("net.neoforged:neoforge:$neoForgeVersion:installer")
-    neoForgeMods(project(":truezoom"))
     neoForgeMods(project(":testmod"))
 }
 
@@ -144,7 +143,7 @@ val syncGameTestMods = tasks.register<Sync>("syncNeoForgeGameTestMods") {
 }
 
 val gameTest = tasks.register<JavaExec>("gameTest") {
-    description = "Runs True Zoom's and the test mod's game tests on NeoForge, through Graft for NeoForge."
+    description = "Runs the test mod's game tests on NeoForge, through Graft for NeoForge."
     group = "verification"
     dependsOn(syncGameTestMods)
     inputs.files(neoForgeMods, tasks.jar, devMinecraftJar)

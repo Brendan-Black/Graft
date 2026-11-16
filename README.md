@@ -27,7 +27,10 @@ This repository holds:
 | [`fabric/`](fabric) | Graft for Fabric: a Fabric mod that runs Graft mods on Fabric |
 | [`neoforge/`](neoforge) | Graft for NeoForge: a NeoForge mod that runs Graft mods on NeoForge |
 | [`gradle-plugin/`](gradle-plugin) | `black.graft.mod`: puts Minecraft on a mod's compile class path and adds `runClient`/`runServer` |
-| [`truezoom/`](truezoom) | True Zoom, the reference mod: hold C to zoom, double-tap and hold it to rush ahead, plus a block and a snack |
+| [`testmod/`](testmod) | A mod that exercises Graft's API in game tests on every platform; never published |
+
+The reference mod, [True Zoom](https://github.com/Brendan-Black/TrueZoom), lives in its own repository and builds
+against Graft from JitPack, the way any mod does.
 
 ## Playing with mods
 
@@ -85,7 +88,7 @@ In `build.gradle.kts`:
 ```kotlin
 plugins {
     java
-    id("black.graft.mod") version "0.1.0"
+    id("black.graft.mod") version "v0.1.0"
 }
 
 repositories {
@@ -93,8 +96,8 @@ repositories {
 }
 
 dependencies {
-    compileOnly("com.github.Brendan-Black.Graft:api:0.1.0") // what you compile against
-    graft("com.github.Brendan-Black.Graft:loader:0.1.0")    // what runClient and runServer run with
+    compileOnly("com.github.Brendan-Black.Graft:api:v0.1.0") // what you compile against
+    graft("com.github.Brendan-Black.Graft:loader:v0.1.0")    // what runClient and runServer run with
 }
 
 java { toolchain.languageVersion = JavaLanguageVersion.of(25) }
@@ -157,7 +160,7 @@ public final class ExampleClient implements ClientMod {
 }
 ```
 
-[True Zoom](truezoom/src/black/truezoom) is a complete, small mod to start from.
+[True Zoom](https://github.com/Brendan-Black/TrueZoom) is a complete, small mod to start from.
 
 ### Testing in game
 
@@ -165,7 +168,7 @@ public final class ExampleClient implements ClientMod {
 `data/<id>/test_instance/<name>.json`, as vanilla's tests have. `./gradlew gameTest` runs them on Minecraft's own
 GameTest server, headless, with your mod loaded through Graft, and `check` runs `gameTest`. A server refuses to start
 when a declared test has no instance (GRAFT-204), so no test is skipped silently. See
-[True Zoom's tests](truezoom/src/black/truezoom/TrueZoomTests.java).
+[True Zoom's tests](https://github.com/Brendan-Black/TrueZoom/blob/main/src/black/truezoom/TrueZoomTests.java).
 
 ### The API
 
@@ -272,9 +275,9 @@ Graft refuses to start a game it can't run properly, and says why with a code:
 ## Building Graft
 
 ```console
-$ ./gradlew check                    # the loader and True Zoom: formatting, warnings, nulls, tests
+$ ./gradlew check                    # formatting, warnings, nulls, tests, and game tests on all three platforms
 $ ./gradlew -p gradle-plugin check   # the Gradle plugin
-$ ./gradlew :truezoom:runClient      # play with True Zoom
+$ ./gradlew :testmod:runClient       # the game, with the test mod
 ```
 
 The code follows [Black Java](https://github.com/Brendan-Black/black-java), and the build enforces it. See
@@ -282,6 +285,6 @@ The code follows [Black Java](https://github.com/Brendan-Black/black-java), and 
 
 ## License
 
-Graft and True Zoom are [Apache-2.0](LICENSE). Minecraft is Mojang's: Graft contains none of its code or assets, and
+Graft is [Apache-2.0](LICENSE). Minecraft is Mojang's: Graft contains none of its code or assets, and
 fetches the game only from Mojang, for your own use under the [Minecraft EULA](https://www.minecraft.net/eula). Graft
 isn't affiliated with Mojang or Microsoft.

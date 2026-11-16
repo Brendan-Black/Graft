@@ -21,5 +21,5 @@ Graft for Fabric runs the same mod jars on Fabric Loader 0.20.1 and Fabric API f
 Gradle plugin writes each mod's `fabric.mod.json` from its descriptor. Graft for NeoForge does the same on NeoForge
 26.3.0.103, from a `neoforge.mods.toml` the plugin also writes. Mods compile against the new `api` artifact.
 
-There is also `java -jar graft.jar server` for dedicated servers, the `black.graft.mod` Gradle plugin, and True Zoom as
-the reference mod.
+There is also `java -jar graft.jar server` for dedicated servers and the `black.graft.mod` Gradle plugin. The reference
+mod, True Zoom, has its own repository.

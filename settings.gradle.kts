@@ -7,7 +7,7 @@ pluginManagement {
     resolutionStrategy.eachPlugin {
         if (requested.id.id == "black.java-standards") useModule("com.github.Brendan-Black.black-java:plugin:${requested.version}")
     }
-    // Graft's own Gradle plugins, which the loader and True Zoom build with.
+    // Graft's own Gradle plugins, which the loader and the test mod build with.
     includeBuild("gradle-plugin")
 }
 
@@ -17,4 +17,4 @@ plugins {
 }
 
 rootProject.name = "Graft"
-include("api", "loader", "fabric", "neoforge", "truezoom", "testmod")
+include("api", "loader", "fabric", "neoforge", "testmod")

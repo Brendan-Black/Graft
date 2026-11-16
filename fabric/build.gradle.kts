@@ -95,7 +95,7 @@ publishing {
     }
 }
 
-// The game tests, on Fabric: Fabric Loader and Fabric API, Graft for Fabric, and the same True Zoom and test mod jars
+// The game tests, on Fabric: Fabric Loader and Fabric API, Graft for Fabric, and the same test mod jar
 // that gameTest runs on Graft's loader, on Minecraft's GameTest server (see ServerMainMixin). check runs it.
 val fabricLauncher = configurations.create("fabricLauncher") { isTransitive = false }
 val fabricMods = configurations.create("fabricMods") { isTransitive = false }
@@ -104,13 +104,12 @@ dependencies {
     fabricLauncher("net.fabricmc:sponge-mixin:0.17.5+mixin.0.8.7")
     for (asm in listOf("asm", "asm-analysis", "asm-commons", "asm-tree", "asm-util")) fabricLauncher("org.ow2.asm:$asm:9.10.1")
     fabricMods("net.fabricmc.fabric-api:fabric-api:0.166.2+26.3")
-    fabricMods(project(":truezoom"))
     fabricMods(project(":testmod"))
 }
 val minecraft = extensions.getByType<black.graft.gradle.GraftMinecraftExtension>()
 val gameTestDir = layout.buildDirectory.dir("gametest")
 val gameTest = tasks.register<JavaExec>("gameTest") {
-    description = "Runs True Zoom's and the test mod's game tests on Fabric, through Graft for Fabric."
+    description = "Runs the test mod's game tests on Fabric, through Graft for Fabric."
     group = "verification"
     val mods = files(fabricMods, tasks.jar)
     val clientJar = minecraft.clientJar
