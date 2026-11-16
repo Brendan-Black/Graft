@@ -49,15 +49,16 @@ public final class ModPlugin implements Plugin<Project> {
 		if (resources == null) {
 			throw new IllegalStateException("the main source set has no resources folder");
 		}
-		// The same jar runs on Fabric: fabric.mod.json, written from the descriptor, lets Graft for Fabric load it.
-		TaskProvider<GenerateFabricMetadata> fabric = project.getTasks().register("graftFabricMetadata", GenerateFabricMetadata.class, t -> {
+		// The same jar runs on Fabric and NeoForge: fabric.mod.json and neoforge.mods.toml, written from the descriptor, let
+		// Graft for Fabric and Graft for NeoForge load it.
+		TaskProvider<GenerateLoaderMetadata> metadata = project.getTasks().register("graftLoaderMetadata", GenerateLoaderMetadata.class, t -> {
 			t.setGroup(GROUP);
-			t.setDescription("Writes fabric.mod.json from graft.mod.properties, so the mod also loads on Fabric.");
+			t.setDescription("Writes fabric.mod.json and neoforge.mods.toml from graft.mod.properties, so the mod also loads on Fabric and NeoForge.");
 			t.getResources().from(main.getResources().getSourceDirectories());
-			t.getOutputDir().set(project.getLayout().getBuildDirectory().dir("generated/graft/fabric"));
+			t.getOutputDir().set(project.getLayout().getBuildDirectory().dir("generated/graft/loaders"));
 		});
 		// Into processResources directly, not as a source folder: a build script that sets its own resource folders keeps it.
-		project.getTasks().named(main.getProcessResourcesTaskName(), org.gradle.language.jvm.tasks.ProcessResources.class, t -> t.from(fabric));
+		project.getTasks().named(main.getProcessResourcesTaskName(), org.gradle.language.jvm.tasks.ProcessResources.class, t -> t.from(metadata));
 
 		File clientDir = project.file("run/client");
 		File serverDir = project.file("run/server");

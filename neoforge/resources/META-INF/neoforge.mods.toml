@@ -1,0 +1,21 @@
+license="Apache-2.0"
+issueTrackerURL="https://github.com/Brendan-Black/Graft/issues"
+
+[[mods]]
+modId="graft"
+version="${version}"
+displayName="Graft for NeoForge"
+description="Runs Graft mods on NeoForge, alongside NeoForge mods. The same mod jar also runs on Graft's own loader and on Fabric."
+displayURL="https://github.com/Brendan-Black/Graft"
+
+[[dependencies.graft]]
+modId="neoforge"
+type="required"
+versionRange="[26.3.0.103,)"
+side="BOTH"
+
+[[dependencies.graft]]
+modId="minecraft"
+type="required"
+versionRange="[26.3,26.4)"
+side="BOTH"

@@ -10,6 +10,7 @@ public final class AllTests {
 		Check.group("downloads (PseudoHttp: hashes, cache, failures)", PluginTest::downloads);
 		Check.group("assets (PseudoHttp: index, objects, resuming)", PluginTest::assets);
 		Check.group("Fabric metadata from descriptors", FabricMetadataTest::run);
+		Check.group("NeoForge metadata from descriptors", NeoForgeMetadataTest::run);
 		System.exit(Check.summary());
 	}
 }

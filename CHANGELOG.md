@@ -18,7 +18,8 @@ A Graft server refuses a player whose mods differ from its own, naming the mods 
 instead of letting mismatched block and item numbers show the wrong blocks.
 
 Graft for Fabric runs the same mod jars on Fabric Loader 0.20.1 and Fabric API for 26.3, alongside Fabric mods; the
-Gradle plugin writes each mod's `fabric.mod.json` from its descriptor. Mods compile against the new `api` artifact.
+Gradle plugin writes each mod's `fabric.mod.json` from its descriptor. Graft for NeoForge does the same on NeoForge
+26.3.0.103, from a `neoforge.mods.toml` the plugin also writes. Mods compile against the new `api` artifact.
 
 There is also `java -jar graft.jar server` for dedicated servers, the `black.graft.mod` Gradle plugin, and True Zoom as
 the reference mod.

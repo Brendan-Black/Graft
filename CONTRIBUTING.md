@@ -16,7 +16,7 @@ JDK 25, or let Gradle download it.
 ./gradlew -p gradle-plugin check   # the same for the Gradle plugin
 ./gradlew format                   # formats every Java file
 ./gradlew :truezoom:runClient      # the game, with True Zoom
-./gradlew gameTest                 # game tests in a real world: True Zoom's and the test mod's, on Graft and on Fabric
+./gradlew gameTest                 # game tests in a real world, on Graft, Fabric and NeoForge
 ```
 
 The first build fetches Minecraft 26.3 from Mojang into Gradle's cache. After that, builds work offline.
@@ -48,7 +48,8 @@ and it never loads the game.
 
 In-game behaviour is tested with game tests on Minecraft's GameTest server. `testmod/` is a mod that exercises Graft's
 API and is never published. Its tests and True Zoom's run on Graft's loader (`:testmod:gameTest`, `:truezoom:gameTest`)
-and on Fabric through Graft for Fabric (`:fabric:gameTest`). `check` runs all three, so the two platforms are held to the
-same behaviour.
+on Fabric through Graft for Fabric (`:fabric:gameTest`), and on NeoForge through Graft for NeoForge
+(`:neoforge:gameTest`, which installs a NeoForge server with NeoForge's own installer the first time). `check` runs them
+all, so the three platforms are held to the same behaviour.
 
 Every bug fixed gets a check that would have caught it.

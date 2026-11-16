@@ -17,4 +17,4 @@ plugins {
 }
 
 rootProject.name = "Graft"
-include("api", "loader", "fabric", "truezoom", "testmod")
+include("api", "loader", "fabric", "neoforge", "truezoom", "testmod")

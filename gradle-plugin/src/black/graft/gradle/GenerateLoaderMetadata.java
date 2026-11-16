@@ -25,10 +25,11 @@ import black.graft.internal.LoadingException;
 
 /**
  * Reads the mod's {@code graft.mod.properties} with Graft's own parser, so a descriptor the loader would refuse fails the
- * build instead, and writes the {@code fabric.mod.json} that lets the same jar load on Fabric.
+ * build instead, and writes the files that let the same jar load on other loaders: {@code fabric.mod.json} for Fabric and
+ * {@code META-INF/neoforge.mods.toml} for NeoForge.
  */
 @CacheableTask
-public abstract class GenerateFabricMetadata extends DefaultTask {
+public abstract class GenerateLoaderMetadata extends DefaultTask {
 	private static final String FABRIC_MOD_JSON = "fabric.mod.json";
 
 	/** The mod's resource folders; exactly one holds {@code graft.mod.properties}. */
@@ -36,7 +37,7 @@ public abstract class GenerateFabricMetadata extends DefaultTask {
 	@PathSensitive(PathSensitivity.RELATIVE)
 	public abstract ConfigurableFileCollection getResources();
 
-	/** Where {@code fabric.mod.json} is written. */
+	/** Where the files are written, at their paths in the jar. */
 	@OutputDirectory
 	public abstract DirectoryProperty getOutputDir();
 
@@ -51,9 +52,11 @@ public abstract class GenerateFabricMetadata extends DefaultTask {
 				+ (descriptors.isEmpty() ? "; every Graft mod needs one at the root of its resources" : ": " + descriptors));
 		}
 		Path descriptor = descriptors.getFirst();
-		if (Files.exists(descriptor.resolveSibling(FABRIC_MOD_JSON))) {
-			throw new GradleException(descriptor.resolveSibling(FABRIC_MOD_JSON) + " exists, but Graft writes that file from "
-				+ Descriptors.FILE_NAME + "; delete it and put what it says in the descriptor");
+		for (String written : List.of(FABRIC_MOD_JSON, NeoForgeMetadata.PATH)) {
+			if (Files.exists(descriptor.resolveSibling(written))) {
+				throw new GradleException(descriptor.resolveSibling(written) + " exists, but Graft writes that file from " + Descriptors.FILE_NAME
+					+ "; delete it and put what it says in the descriptor");
+			}
 		}
 		ModInfo mod;
 		try (InputStream in = Files.newInputStream(descriptor)) {
@@ -63,10 +66,15 @@ public abstract class GenerateFabricMetadata extends DefaultTask {
 		} catch (LoadingException e) {
 			throw new GradleException(String.join("\n", e.problems()), e);
 		}
-		Path out = getOutputDir().get().getAsFile().toPath().resolve(FABRIC_MOD_JSON);
+		Path dir = getOutputDir().get().getAsFile().toPath();
+		write(dir.resolve(FABRIC_MOD_JSON), FabricMetadata.json(mod));
+		write(dir.resolve(NeoForgeMetadata.PATH), NeoForgeMetadata.toml(mod));
+	}
+
+	private static void write(Path out, String text) {
 		try {
 			Files.createDirectories(out.getParent());
-			Files.writeString(out, FabricMetadata.json(mod), StandardCharsets.UTF_8);
+			Files.writeString(out, text, StandardCharsets.UTF_8);
 		} catch (IOException e) {
 			throw new UncheckedIOException(e);
 		}
