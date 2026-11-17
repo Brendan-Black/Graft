@@ -36,7 +36,7 @@ configurations.compileOnly { extendsFrom(bundled) }
 // NeoForge's classes without its patches to Minecraft, which Graft for NeoForge doesn't need.
 dependencies {
     bundled(project(":api"))
-    bundled("com.github.Brendan-Black.black-java:lib:1.3.5")
+    bundled("com.github.Brendan-Black.black-java:lib:1.3.6")
     compileOnly("net.neoforged:neoforge:26.3.0.103:universal") { isTransitive = false }
     compileOnly("net.neoforged.fancymodloader:loader:12.0.12") { isTransitive = false }
     compileOnly("net.neoforged:bus:8.0.5") { isTransitive = false }
