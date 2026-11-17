@@ -1,0 +1,46 @@
+name: Release
+
+# Pushing a version tag (v0.1.1) builds the three jars players install, checks them the way CI does, and attaches them to
+# a GitHub release with their SHA-256 sums and the tag's CHANGELOG section. Run it by hand to release a tag pushed before
+# this workflow existed.
+on:
+  push:
+    tags: ['v*']
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: An existing tag to build and release, such as v0.1.1
+        required: true
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    env:
+      TAG: ${{ inputs.tag || github.ref_name }}
+      VERSION: ${{ inputs.tag || github.ref_name }} # the jars' own version, as JitPack builds them
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: ${{ env.TAG }}
+      - uses: actions/setup-java@v6
+        with:
+          distribution: corretto
+          java-version: '25'
+      - uses: gradle/actions/setup-gradle@v6
+      - run: ./gradlew check :loader:jar :fabric:jar :neoforge:jar
+      - run: ./gradlew -p gradle-plugin check
+      - name: Collect the jars
+        run: |
+          v="${TAG#v}"
+          mkdir dist
+          cp "loader/build/libs/graft-$v.jar" "fabric/build/libs/graft-fabric-$v.jar" "neoforge/build/libs/graft-neoforge-$v.jar" dist/
+          (cd dist && sha256sum -- *.jar > SHA256SUMS)
+          awk -v v="$v" '/^## /{p = ($2 == v)} p' CHANGELOG.md > notes.md
+          test -s notes.md || { echo "CHANGELOG.md has no '## $v' section"; exit 1; }
+      - name: Publish the release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh release create "$TAG" dist/* --verify-tag --title "Graft ${TAG#v}" --notes-file notes.md

@@ -49,11 +49,21 @@ public final class ConfigTest {
 		Config.load(SPEC, file, "title");
 		eq("zoom_factor=4.0\nsteps=3\nsmooth=TRUE\n", Files.readString(file), "a complete file isn't touched");
 
-		// Mistakes stop the game and say exactly what's wrong, all at once.
+		// A setting the mod no longer has doesn't stop the game: it leaves the file, and stays as a comment.
+		Files.writeString(file, "zoom_factor=8.5\nsteps=3\nsmooth=false\nold_mode=fast\n");
+		Config retired = Config.load(SPEC, file, "True Zoom settings");
+		eq(8.5, retired.get(FACTOR), "the other settings are read as the player set them");
+		String withoutOld = Files.readString(file);
+		ok(!withoutOld.contains("\nold_mode="), "the old setting is taken out of the file: " + withoutOld);
+		ok(withoutOld.endsWith("# Settings this mod no longer has, as they were:\n# old_mode=fast\n"), "and kept at its end, as a comment");
+		ok(withoutOld.contains("zoom_factor=8.5") && withoutOld.contains("smooth=false"), "the player's values are kept");
+		eq(8.5, Config.load(SPEC, file, "title").get(FACTOR), "the rewritten file reads back");
+		eq(withoutOld, Files.readString(file), "and isn't rewritten again");
+
+		// Values that don't fit stop the game and say exactly what's wrong, all at once.
 		Files.writeString(file, "zoom_factor=0.5\nsteps=lots\nsmooth=yes\nzoomfactor=2\n");
 		ConfigException e = fails(ConfigException.class, () -> Config.load(SPEC, file, "title"), "a file with mistakes");
-		eq(4, e.problems().size(), "every problem: " + e.problems());
-		ok(e.problems().contains("unknown setting \"zoomfactor\"; the settings are [smooth, steps, zoom_factor]"), "an unknown key lists the real ones");
+		eq(3, e.problems().size(), "every problem: " + e.problems());
 		ok(e.problems().stream().anyMatch(p -> p.startsWith("zoom_factor: 0.5 isn't from 1.0 to 50.0")), "out of range");
 		ok(e.problems().stream().anyMatch(p -> p.startsWith("steps: \"lots\" isn't a whole number")), "not a number");
 		ok(e.problems().stream().anyMatch(p -> p.startsWith("smooth: \"yes\" isn't true or false")), "not a flag");

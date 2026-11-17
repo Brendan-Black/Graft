@@ -1,6 +1,7 @@
 package black.graft.loader;
 
 import java.util.Collection;
+import java.util.List;
 
 import black.graft.internal.GraftRuntime;
 
@@ -12,6 +13,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.handshake.ClientIntentionPacket;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerLoginPacketListenerImpl;
+import net.minecraft.server.packs.repository.Pack;
 import net.minecraft.server.packs.repository.RepositorySource;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.ItemStack;
@@ -41,6 +43,11 @@ public final class Hooks {
 	/** Start of {@code new PackRepository(sources)}: offer each mod's assets or data as a pack. */
 	public static RepositorySource[] extendPackSources(RepositorySource[] sources) {
 		return ModPacks.extend(Agent.mods(), sources);
+	}
+
+	/** Every return from {@code PackRepository.rebuildSelected(ids)}: put mods' newly added packs just above vanilla's. */
+	public static List<Pack> placeModPacks(List<Pack> selected, Collection<String> requested) {
+		return ModPacks.place(Agent.mods(), selected, requested);
 	}
 
 	/** Start of {@code MinecraftServer.runServer()}. */

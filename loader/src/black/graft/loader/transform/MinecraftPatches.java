@@ -1,6 +1,7 @@
 package black.graft.loader.transform;
 
 import static java.lang.constant.ConstantDescs.CD_Collection;
+import static java.lang.constant.ConstantDescs.CD_List;
 import static java.lang.constant.ConstantDescs.CD_String;
 import static java.lang.constant.ConstantDescs.CD_float;
 import static java.lang.constant.ConstantDescs.CD_void;
@@ -21,6 +22,7 @@ import black.graft.loader.transform.Patch.Injection;
 public final class MinecraftPatches {
 	private static final String SERVER_CLASS = "net/minecraft/server/MinecraftServer";
 	private static final String TAB_CLASS = "net/minecraft/world/item/CreativeModeTab";
+	private static final String PACK_REPOSITORY_CLASS = "net/minecraft/server/packs/repository/PackRepository";
 	private static final String OPTIONS_CLASS = "net/minecraft/client/Options";
 	private static final String MINECRAFT_CLASS = "net/minecraft/client/Minecraft";
 	private static final String NO_ARGS_VOID = "()V";
@@ -64,10 +66,14 @@ public final class MinecraftPatches {
 					.aload(0)
 					.invokestatic(hooks, "tabEntries", MethodTypeDesc.of(CD_Collection, CREATIVE_MODE_TAB))
 					.invokeinterface(TAB_OUTPUT, "acceptAll", MethodTypeDesc.of(CD_void, CD_Collection))),
-			new Patch("net/minecraft/server/packs/repository/PackRepository", INIT_NAME,
+			new Patch(PACK_REPOSITORY_CLASS, INIT_NAME,
 				"([Lnet/minecraft/server/packs/repository/RepositorySource;)V",
 				"offering mod assets and data as built-in packs", new Injection.AtHead(),
 				code -> code.aload(1).invokestatic(hooks, "extendPackSources", MethodTypeDesc.of(REPOSITORY_SOURCES, REPOSITORY_SOURCES)).astore(1)),
+			new Patch(PACK_REPOSITORY_CLASS, "rebuildSelected", "(Ljava/util/Collection;)Ljava/util/List;",
+				"putting newly added mod packs just above vanilla's, under the player's and the world's packs", new Injection.BeforeReturns(),
+				// the selected list is on the stack; local 1 is the ids that were asked for
+				code -> code.aload(1).invokestatic(hooks, "placeModPacks", MethodTypeDesc.of(CD_List, CD_List, CD_Collection))),
 			new Patch(SERVER_CLASS, "runServer", NO_ARGS_VOID,
 				"the ServerStarting event, inside runServer's crash handling",
 				new Injection.BeforeInvoke(SERVER_CLASS, "initServer", "()Z"),

@@ -70,6 +70,7 @@ tasks.processResources {
 }
 
 tasks.jar {
+    archiveBaseName = "graft" // graft-<version>.jar, the name players download; the Maven artifact stays "loader"
     manifest {
         attributes(
             "Premain-Class" to "black.graft.loader.Agent",

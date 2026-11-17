@@ -45,7 +45,9 @@ public final class GraftFabric implements ModInitializer {
 	public void onInitialize() {
 		FabricLoader fabric = FabricLoader.getInstance();
 		Dist dist = fabric.getEnvironmentType() == EnvType.CLIENT ? Dist.CLIENT : Dist.SERVER;
-		GraftRuntime runtime = new GraftRuntime(dist, fabric.getConfigDir(), graftMods(fabric.getAllMods()), GraftFabric.class.getClassLoader());
+		GraftRuntime runtime =
+			new GraftRuntime(dist, fabric.getConfigDir(), graftMods(fabric.getAllMods()).stream().filter(m -> m.side().runsOn(dist)).toList(),
+				GraftFabric.class.getClassLoader());
 		GraftRuntime.install(runtime);
 
 		runtime.initializeCommon();

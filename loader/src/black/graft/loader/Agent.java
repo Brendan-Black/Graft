@@ -73,7 +73,15 @@ public final class Agent {
 		ClassLoader system = ClassLoader.getSystemClassLoader();
 		Version minecraft = Versions.minecraft(system.getResourceAsStream(Versions.MINECRAFT_RESOURCE));
 		Version graft = Versions.graft(Agent.class.getClassLoader().getResourceAsStream(Versions.GRAFT_RESOURCE));
-		List<ModCandidate> resolved = Resolution.resolve(Discovery.discover(environment.modsDir(), environment.devRoots()), minecraft, graft);
+		List<ModCandidate> found = new ArrayList<>();
+		for (ModCandidate m : Discovery.discover(environment.modsDir(), environment.devRoots())) {
+			if (m.info().side().runsOn(environment.dist())) {
+				found.add(m);
+			} else {
+				LOG.log(System.Logger.Level.INFO, "Skipping " + m.info() + " on this dedicated server: its descriptor says side=client");
+			}
+		}
+		List<ModCandidate> resolved = Resolution.resolve(found, minecraft, graft);
 
 		for (ModCandidate m : resolved) {
 			if (m.kind() == ModCandidate.Kind.JAR) {

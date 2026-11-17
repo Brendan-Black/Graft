@@ -38,7 +38,7 @@ val sharedJson = tasks.register<Sync>("sharedJson") {
         include("black/graft/json/**")
         include("black/graft/internal/Descriptors.java", "black/graft/internal/ErrorCode.java", "black/graft/internal/LoadingException.java")
         include("black/graft/ModId.java", "black/graft/ModInfo.java", "black/graft/Dependency.java", "black/graft/Nullable.java")
-        include("black/graft/Version.java", "black/graft/VersionRange.java")
+        include("black/graft/Version.java", "black/graft/VersionRange.java", "black/graft/Side.java", "black/graft/Dist.java")
     }
     into(layout.buildDirectory.dir("shared"))
 }

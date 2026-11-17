@@ -45,6 +45,7 @@ public interface Setup {
 	 * @param factory makes the block from properties that already carry its id; set the rest on them
 	 * @return a handle that holds the block once Minecraft has made it
 	 * @throws IllegalArgumentException if this mod already declared a block by that name
+	 * @throws IllegalStateException    if the mod's descriptor says {@code side=client} or {@code side=server}
 	 */
 	<B extends Block> Registered<B> block(ContentName name, Function<BlockBehaviour.Properties, B> factory);
 
@@ -56,6 +57,7 @@ public interface Setup {
 	 * @param factory makes the item from properties that already carry its id; set the rest on them
 	 * @return a handle that holds the item once Minecraft has made it
 	 * @throws IllegalArgumentException if this mod already declared an item by that name
+	 * @throws IllegalStateException    if the mod's descriptor says {@code side=client} or {@code side=server}
 	 */
 	<I extends Item> Registered<I> item(ContentName name, Function<Item.Properties, I> factory);
 

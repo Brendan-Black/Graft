@@ -1,0 +1,7 @@
+{
+  "type": "minecraft:function",
+  "function": "graft_testmod:mod_data_above_vanilla",
+  "environment": "minecraft:default",
+  "structure": "minecraft:empty",
+  "max_ticks": 5
+}

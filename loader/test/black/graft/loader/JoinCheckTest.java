@@ -38,6 +38,18 @@ public final class JoinCheckTest {
 		String modsOnVanilla = JoinCheck.refusal(JoinCheck.mark(HOST, List.of(zoom)), List.of()).orElse("");
 		ok(modsOnVanilla.contains("no mods"), "a modded client on a server without mods is told to remove them: " + modsOnVanilla);
 
+		// A mod for one end only isn't asked of the other: a zoom mod doesn't keep its player off servers without it.
+		ModInfo clientOnly = Mods.info(Mods.descriptor("minimap", "1.0", "side=client"));
+		ModInfo serverOnly = Mods.info(Mods.descriptor("admintools", "1.0", "side=server"));
+		eq(Optional.empty(), JoinCheck.refusal(JoinCheck.mark(HOST, List.of(zoom, other, clientOnly)), server),
+			"a client with an extra client-only mod joins");
+		eq(Optional.empty(), JoinCheck.refusal(JoinCheck.mark(HOST, List.of(clientOnly)), List.of()), "even a server with no mods");
+		eq(Optional.empty(), JoinCheck.refusal(JoinCheck.mark(HOST, server), List.of(zoom, other, serverOnly)),
+			"a server with an extra server-only mod lets clients without it in");
+		eq(Optional.empty(), JoinCheck.refusal(HOST, List.of(serverOnly)), "a vanilla client joins a server whose only mods are server-only");
+		String listed = JoinCheck.refusal(JoinCheck.mark(HOST, List.of()), List.of(zoom, serverOnly)).orElse("");
+		ok(listed.contains("truezoom 1.0.0") && !listed.contains("admintools"), "a refused player is only told the mods they need: " + listed);
+
 		String longHost = "h".repeat(JoinCheck.MAX_HOST_LENGTH - 10);
 		eq(longHost, JoinCheck.mark(longHost, server), "a host name too long for the fingerprint is sent as it is, not cut");
 		ok(JoinCheck.mark("h".repeat(200), server).length() <= JoinCheck.MAX_HOST_LENGTH, "a marked host name fits the handshake");

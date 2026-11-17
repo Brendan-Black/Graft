@@ -52,8 +52,8 @@ public final class GraftNeoForge {
 	 */
 	public GraftNeoForge(IEventBus modBus, ModContainer container, net.neoforged.api.distmarker.Dist neoDist) {
 		Dist dist = neoDist.isClient() ? Dist.CLIENT : Dist.SERVER;
-		GraftRuntime runtime = new GraftRuntime(dist, FMLPaths.CONFIGDIR.get(), graftMods(ModList.get().getModFiles()),
-			GraftNeoForge.class.getClassLoader());
+		List<ModInfo> mods = graftMods(ModList.get().getModFiles()).stream().filter(m -> m.side().runsOn(dist)).toList();
+		GraftRuntime runtime = new GraftRuntime(dist, FMLPaths.CONFIGDIR.get(), mods, GraftNeoForge.class.getClassLoader());
 		GraftRuntime.install(runtime);
 
 		runtime.initializeCommon();

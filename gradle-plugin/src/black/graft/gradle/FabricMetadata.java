@@ -6,6 +6,7 @@ import java.util.List;
 import black.graft.Dependency;
 import black.graft.ModId;
 import black.graft.ModInfo;
+import black.graft.Side;
 import black.graft.Version;
 import black.graft.VersionRange;
 
@@ -42,7 +43,8 @@ final class FabricMetadata {
 		if (!mod.license().isEmpty()) {
 			out.append("  \"license\": ").append(string(mod.license())).append(",\n");
 		}
-		out.append("  \"environment\": \"*\",\n");
+		// Fabric doesn't load a client mod on a dedicated server. A server mod stays "*": single player runs a server too.
+		out.append("  \"environment\": ").append(string(mod.side() == Side.CLIENT ? "client" : "*")).append(",\n");
 		out.append("  \"depends\": {\n    ").append(String.join(",\n    ", depends)).append("\n  },\n");
 		out.append("  \"custom\": { \"graft\": { \"descriptor\": \"graft.mod.properties\" } }\n");
 		out.append("}\n");

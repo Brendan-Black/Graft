@@ -15,6 +15,9 @@ import black.graft.internal.ErrorCode;
  * out in registration order, so a client with other mods reads every modded block wrong instead of failing. The client
  * sends a fingerprint of its mods after its handshake's host name, behind a NUL as Forge's marker is (servers and
  * proxies already split the host name there), and the server compares it with its own before the login goes on.
+ *
+ * <p>Only {@link black.graft.Side#BOTH} mods count. A {@code side=client} or {@code side=server} mod adds no blocks or items
+ * (Graft refuses them), so either end can have it alone.
  */
 final class JoinCheck {
 	/** What goes between the host name and the fingerprint. The 1 is this check's version. */
@@ -27,12 +30,13 @@ final class JoinCheck {
 
 	/** The host name a client sends: {@code host}, then the mark and the fingerprint of its mods, if they fit. */
 	static String mark(String host, List<ModInfo> mods) {
-		String marked = host + MARK + fingerprint(mods);
+		String marked = host + MARK + fingerprint(shared(mods));
 		return marked.length() <= MAX_HOST_LENGTH ? marked : host;
 	}
 
 	/** Why a client that sent {@code host} can't join a server with {@code serverMods}, worded for that player; empty if it can. */
-	static Optional<String> refusal(String host, List<ModInfo> serverMods) {
+	static Optional<String> refusal(String host, List<ModInfo> allServerMods) {
+		List<ModInfo> serverMods = shared(allServerMods);
 		int at = host.lastIndexOf(MARK);
 		Optional<String> theirs = at < 0 ? Optional.empty() : Optional.of(host.substring(at + MARK.length()));
 		if (theirs.isEmpty()) {
@@ -44,9 +48,15 @@ final class JoinCheck {
 			return Optional.empty();
 		}
 		return Optional.of(serverMods.isEmpty()
-			? "This server has no mods, and your game has some (" + ErrorCode.MODS_DIFFER + "). Remove them to join."
-			: "Your mods aren't this server's (" + ErrorCode.MODS_DIFFER + "). Install exactly these, at these versions, and no others: "
+			? "This server has no mods that players need, and your game has some (" + ErrorCode.MODS_DIFFER + "). Remove them to join."
+			: "Your mods aren't this server's (" + ErrorCode.MODS_DIFFER
+				+ "). Install exactly these, at these versions, and no other mods except client-only ones: "
 				+ list(serverMods) + ".");
+	}
+
+	/** The mods both ends must have: not the ones a descriptor marks {@code side=client} or {@code side=server}. */
+	static List<ModInfo> shared(List<ModInfo> mods) {
+		return mods.stream().filter(m -> m.side().needsBothEnds()).toList();
 	}
 
 	/** A short hash of each mod's id and version, whatever order the mods are in. */

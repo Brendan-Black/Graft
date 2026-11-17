@@ -12,18 +12,20 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
-import java.util.TreeSet;
+import java.util.TreeMap;
 
 /**
  * A mod's settings, read from its config file. Mods get one from their setup; {@link #load} is public so tools and tests
  * can read a file the same way.
  *
  * <p>The file is a {@code .properties} file with a comment above each setting. Graft writes it with defaults the first
- * time, and adds any setting a newer version of the mod brings, keeping the values a player set. A key it doesn't know or a
- * value out of range stops the game with a message saying which, rather than being quietly replaced: the player meant
- * something by it.
+ * time, and adds any setting a newer version of the mod brings, keeping the values a player set. A setting the mod no longer
+ * has is taken out, with a warning in the log, and kept at the end of the file as a comment, so a mod update never stops
+ * the game over a file the player didn't touch. A value that doesn't fit stops the game with a message saying which,
+ * rather than being quietly replaced: the player meant something by it.
  */
 public final class Config {
+	private static final System.Logger LOG = System.getLogger("graft");
 	private final ConfigSpec spec;
 	private final Map<String, Object> values;
 
@@ -38,7 +40,7 @@ public final class Config {
 	 * @param spec  the settings the file holds
 	 * @param file  the file, such as {@code config/truezoom.properties}
 	 * @param title a line for the top of the file, such as "True Zoom settings"
-	 * @throws ConfigException if the file has unknown keys or values that don't fit, or can't be read or written
+	 * @throws ConfigException if the file has values that don't fit, or can't be read or written
 	 */
 	public static Config load(ConfigSpec spec, Path file, String title) {
 		Properties raw = new Properties();
@@ -57,9 +59,10 @@ public final class Config {
 		for (Setting<?> s : spec.settings()) {
 			byKey.put(s.key(), s);
 		}
-		for (String key : new TreeSet<>(raw.stringPropertyNames())) {
+		Map<String, String> retired = new TreeMap<>();
+		for (String key : raw.stringPropertyNames()) {
 			if (!byKey.containsKey(key)) {
-				problems.add("unknown setting \"" + key + "\"; the settings are " + byKey.keySet().stream().sorted().toList());
+				retired.put(key, raw.getProperty(key));
 			}
 		}
 		boolean missing = false;
@@ -81,8 +84,15 @@ public final class Config {
 		}
 
 		Config config = new Config(spec, values);
-		if (!exists || missing) {
-			config.write(file, title);
+		if (!retired.isEmpty()) {
+			LOG.log(System.Logger.Level.WARNING,
+				file + ": " + String.join(", ", retired.keySet()) + (retired.size() == 1 ? " isn't a setting" : " aren't settings")
+					+ " any more; taking " + (retired.size() == 1 ? "it" : "them") + " out of the file, where "
+					+ (retired.size() == 1 ? "it stays" : "they stay")
+					+ " as a comment. The settings are " + byKey.keySet().stream().sorted().toList());
+		}
+		if (!exists || missing || !retired.isEmpty()) {
+			config.write(file, title, retired);
 		}
 		return config;
 	}
@@ -107,7 +117,7 @@ public final class Config {
 	}
 
 	/** Writes the whole file to a temporary sibling and moves it into place, so a crash never leaves half a file. */
-	private void write(Path file, String title) {
+	private void write(Path file, String title, Map<String, String> retired) {
 		StringBuilder out = new StringBuilder();
 		out.append("# ").append(title.replace('\n', ' ')).append('\n');
 		out.append("# Graft adds settings this file is missing and keeps the values you set.\n");
@@ -118,6 +128,10 @@ public final class Config {
 			}
 			out.append("# ").append(s.describe()).append('\n');
 			out.append(s.key()).append('=').append(formatted(s)).append('\n');
+		}
+		if (!retired.isEmpty()) {
+			out.append("\n# Settings this mod no longer has, as they were:\n");
+			retired.forEach((key, value) -> out.append("# ").append(key).append('=').append(value.replace('\n', ' ').replace('\r', ' ')).append('\n'));
 		}
 		try {
 			Path dir = file.toAbsolutePath().getParent();

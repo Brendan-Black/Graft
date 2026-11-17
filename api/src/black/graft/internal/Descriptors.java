@@ -7,6 +7,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
 import java.util.Properties;
 import java.util.Set;
 import java.util.TreeSet;
@@ -15,6 +16,7 @@ import java.util.regex.Pattern;
 import black.graft.Dependency;
 import black.graft.ModId;
 import black.graft.ModInfo;
+import black.graft.Side;
 import black.graft.Nullable;
 import black.graft.Version;
 import black.graft.VersionRange;
@@ -33,7 +35,8 @@ public final class Descriptors {
 	private static final String LICENSE = "license";
 	private static final String ENTRYPOINT = "entrypoint";
 	private static final String CLIENT_ENTRYPOINT = "client-entrypoint";
-	private static final Set<String> KEYS = Set.of(ID, NAME, VERSION, DESCRIPTION, AUTHORS, LICENSE, ENTRYPOINT, CLIENT_ENTRYPOINT);
+	private static final String SIDE = "side";
+	private static final Set<String> KEYS = Set.of(ID, NAME, VERSION, DESCRIPTION, AUTHORS, LICENSE, SIDE, ENTRYPOINT, CLIENT_ENTRYPOINT);
 	private static final Pattern CLASS_NAME = Pattern.compile("[\\p{L}_$][\\p{L}\\p{N}_$]*(\\.[\\p{L}_$][\\p{L}\\p{N}_$]*)*");
 
 	private Descriptors() {}
@@ -77,6 +80,7 @@ public final class Descriptors {
 
 		String entrypoint = className(p, ENTRYPOINT, origin, problems);
 		String clientEntrypoint = className(p, CLIENT_ENTRYPOINT, origin, problems);
+		Side side = side(p, origin, problems);
 
 		List<Dependency> dependencies = new ArrayList<>();
 		for (String key : new TreeSet<>(p.stringPropertyNames())) {
@@ -108,6 +112,7 @@ public final class Descriptors {
 			p.getProperty(DESCRIPTION, "").strip(),
 			authors,
 			p.getProperty(LICENSE, "").strip(),
+			side,
 			entrypoint,
 			clientEntrypoint,
 			dependencies);
@@ -126,6 +131,22 @@ public final class Descriptors {
 			problems.add(origin + ": " + key + ": " + e.getMessage());
 			return null;
 		}
+	}
+
+	/** Reads {@code side}: {@code both} (the default), {@code client} or {@code server}. */
+	private static Side side(Properties p, String origin, List<String> problems) {
+		String raw = p.getProperty(SIDE);
+		if (raw == null) {
+			return Side.BOTH;
+		}
+		String name = raw.strip();
+		for (Side s : Side.values()) {
+			if (s.name().toLowerCase(Locale.ROOT).equals(name)) {
+				return s;
+			}
+		}
+		problems.add(origin + ": " + SIDE + ": \"" + raw + "\" isn't both, client or server");
+		return Side.BOTH;
 	}
 
 	private static @Nullable String className(Properties p, String key, String origin, List<String> problems) {

@@ -53,7 +53,7 @@ public final class MinecraftPatchesTest {
 
 			List<Patch> all = new ArrayList<>(MinecraftPatches.common(HOOKS));
 			all.addAll(MinecraftPatches.client(CLIENT_HOOKS));
-			eq(12, all.size(), "Graft makes twelve patches (the README's table lists them)");
+			eq(13, all.size(), "Graft makes thirteen patches (the README's table lists them)");
 
 			Map<String, List<Patch>> byClass = new LinkedHashMap<>();
 			for (Patch p : all) {

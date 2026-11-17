@@ -9,6 +9,7 @@ import java.util.List;
 import black.graft.Dependency;
 import black.graft.ModId;
 import black.graft.ModInfo;
+import black.graft.Side;
 import black.graft.Version;
 import black.graft.VersionRange;
 
@@ -42,6 +43,11 @@ public final class DescriptorTest {
 		ok(minimal.optEntrypoint().isEmpty() && minimal.optClientEntrypoint().isEmpty(), "entrypoints are optional");
 		eq("", minimal.description(), "description defaults to empty");
 		ok(minimal.authors().isEmpty() && minimal.dependencies().isEmpty(), "no authors, no dependencies");
+		eq(Side.BOTH, minimal.side(), "side defaults to both");
+		eq(Side.CLIENT, Mods.info(Mods.descriptor("zoom", "1", "side=client")).side(), "side=client");
+		eq(Side.SERVER, Mods.info(Mods.descriptor("admin", "1", "side= server ")).side(), "side=server, trimmed");
+		ok(fails(LoadingException.class, () -> Mods.info(Mods.descriptor("odd", "1", "side=Client")), "a side that isn't one").getMessage()
+			.contains("isn't both, client or server"), "a side is written in lower case, as one of the three");
 
 		// Every problem in one descriptor is reported at once, so a mod author fixes them in one go.
 		LoadingException e = fails(LoadingException.class, () -> Mods.info("""

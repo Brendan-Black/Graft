@@ -9,7 +9,7 @@
 
 **A small, free Minecraft mod loader in pure JDK 25: one Java agent, a documented API, and no third-party code.**
 
-Since 26.1, Minecraft ships with its real class and method names. Graft builds on that: it patches twelve methods
+Since 26.1, Minecraft ships with its real class and method names. Graft builds on that: it patches thirteen methods
 with the JDK's own ClassFile API as the game loads them, and gives mods a short API for blocks, items, creative tabs,
 events, key bindings, the field of view, config files and their own assets and data. Nothing is remapped, decompiled or
 redistributed. Mods compile against Mojang's own jar.
@@ -35,6 +35,10 @@ against Graft from JitPack, the way any mod does.
 ## Playing with mods
 
 Graft 0.1 runs on **Minecraft 26.3** with **Java 25** (the launcher's own runtime for 26.x).
+
+Download the jars from [Releases](https://github.com/Brendan-Black/Graft/releases/latest): `graft-<version>.jar` (called
+`graft.jar` below), `graft-fabric-<version>.jar` and `graft-neoforge-<version>.jar`. `SHA256SUMS` beside them lists each
+jar's checksum.
 
 **Client.** Put `graft.jar` somewhere permanent. In the Minecraft launcher, open *Installations*, edit (or copy) the 26.3
 installation, open *More options*, and add this to the start of *JVM arguments*:
@@ -64,7 +68,8 @@ mods in `mods/`, with any Fabric mods you like.
 
 **Clients and servers need the same mods**, at the same versions: blocks and items travel between them as numbers, so
 anything else would show the wrong blocks. A Graft server refuses a player whose mods differ, and tells them which mods
-and versions to install (GRAFT-106). On Fabric and NeoForge, their own registry sync does this job.
+and versions to install (GRAFT-106). On Fabric and NeoForge, their own registry sync does this job. Mods marked
+`side=client` (a zoom, a minimap) or `side=server` (admin tools) don't count: either end can have them alone.
 
 ## Making a mod
 
@@ -120,6 +125,7 @@ version=1.0.0
 description=What it does, in a sentence.
 authors=You
 license=Apache-2.0
+side=both
 entrypoint=com.example.ExampleMod
 client-entrypoint=com.example.client.ExampleClient
 depends.minecraft=[26.3,26.4)
@@ -130,8 +136,14 @@ Only `id`, `name` and `version` are required. Ids are 2–64 of `a-z 0-9 _`. Ver
 are written as in Maven: `[1.0,2.0)`, `[0.1,)`, `[1.2.0]`, or `*`. A bare `1.0` is refused, because Maven reads it as
 "anything". An unknown key is an error, so a typo can't go unnoticed.
 
+`side` says where the mod is needed. `both`, the default, is for a mod on client and server alike, and a server checks that
+joining players have it. `client` is for a mod only the player's own game needs: a dedicated server doesn't load it.
+`server` is for a mod only a server needs: it loads wherever a server runs, single player included. Neither is asked of
+joining players, and neither may add blocks or items, which both ends must have.
+
 Assets go in `assets/<id>/` and data in `data/<id>/`, as in a resource or data pack. Graft offers them to the game as
-always-on built-in packs. You don't write a `pack.mcmeta`.
+always-on built-in packs, placed just above vanilla's: they can override vanilla's files, and players' resource packs and
+worlds' data packs can override theirs. You don't write a `pack.mcmeta`.
 
 ### The entrypoints
 
@@ -233,6 +245,7 @@ fails, not your game.
 | `core.registries.BuiltInRegistries` | `freeze()` | start | creating mods' blocks and items |
 | `world.item.CreativeModeTab` | `buildContents(...)` | after the vanilla generator | creative tab entries |
 | `server.packs.repository.PackRepository` | constructor | start | mod assets and data as packs |
+| `server.packs.repository.PackRepository` | `rebuildSelected(...)` | every return | newly added mod packs just above vanilla's |
 | `server.MinecraftServer` | `runServer()` | before it calls `initServer()`, inside its crash handling | `ServerStarting` |
 | `server.MinecraftServer` | `stopServer()` | start | `ServerStopping` |
 | `server.MinecraftServer` | `tickServer(...)` | every return | `ServerTick` |

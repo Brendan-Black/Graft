@@ -2,6 +2,7 @@ package black.graft.testmod;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -19,6 +20,7 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
+import net.minecraft.server.packs.repository.PackRepository;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.CreativeModeTabs;
@@ -31,6 +33,7 @@ import net.minecraft.world.level.block.Block;
  */
 public final class TestMod implements Mod {
 	private static final Setting.WholeNumber ANSWER = new Setting.WholeNumber("answer", 42, 0, 100, "A setting the tests read back.");
+	private static final String VANILLA_PACK = "vanilla";
 	private static final ContentName TEST_BLOCK = new ContentName("test_block");
 	private static final ResourceKey<CreativeModeTab> INGREDIENTS = ResourceKey.create(Registries.CREATIVE_MODE_TAB,
 		Identifier.withDefaultNamespace(VanillaTab.INGREDIENTS.path()));
@@ -77,6 +80,26 @@ public final class TestMod implements Mod {
 		setup.gameTest(new ContentName("config_written"), helper -> {
 			helper.assertValueEqual(42, answer, "the setting's default");
 			helper.assertTrue(Files.isRegularFile(Path.of("config", "graft_testmod.properties")), "the config file was written");
+			helper.succeed();
+		});
+
+		// A world that starts with vanilla and one other data pack, as a new world does: Minecraft adds the mod's required pack, and
+		// Graft puts it just above vanilla, under the world's own pack. Graft's loader names it mod/<id>; Fabric and NeoForge order
+		// their own packs, so there it's skipped. The selection is put back afterwards; nothing is reloaded.
+		setup.gameTest(new ContentName("mod_data_above_vanilla"), helper -> {
+			PackRepository packs = helper.getLevel().getServer().getPackRepository();
+			List<String> before = List.copyOf(packs.getSelectedIds());
+			String mine = "mod/graft_testmod";
+			String other = before.stream().filter(id -> !id.equals(VANILLA_PACK) && !id.startsWith("mod/")).findFirst().orElse("");
+			if (before.contains(mine) && !other.isEmpty()) {
+				try {
+					packs.setSelected(List.of(VANILLA_PACK, other));
+					List<String> placed = List.copyOf(packs.getSelectedIds());
+					helper.assertValueEqual(List.of(VANILLA_PACK, mine, other), placed, "the mod's data pack, just above vanilla's and under the world's");
+				} finally {
+					packs.setSelected(before);
+				}
+			}
 			helper.succeed();
 		});
 

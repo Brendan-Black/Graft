@@ -1,6 +1,7 @@
 package black.graft.internal;
 
 import java.util.HashSet;
+import java.util.Locale;
 import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -61,6 +62,7 @@ final class SetupImpl implements Setup {
 	@Override
 	public <B extends Block> Registered<B> block(ContentName name, Function<BlockBehaviour.Properties, B> factory) {
 		window.check("declare block " + name);
+		requireBothSides("block " + name);
 		if (!blocks.add(name)) {
 			throw new IllegalArgumentException(mod.id() + " declared block " + name + " twice");
 		}
@@ -70,6 +72,7 @@ final class SetupImpl implements Setup {
 	@Override
 	public <I extends Item> Registered<I> item(ContentName name, Function<Item.Properties, I> factory) {
 		window.check("declare item " + name);
+		requireBothSides("item " + name);
 		if (!items.add(name)) {
 			throw new IllegalArgumentException(mod.id() + " declared item " + name + " twice");
 		}
@@ -121,6 +124,14 @@ final class SetupImpl implements Setup {
 	@Override
 	public System.Logger logger() {
 		return System.getLogger(mod.id().value());
+	}
+
+	/** Blocks and items travel between client and server as numbers, so only a mod on both ends may add them. */
+	private void requireBothSides(String what) {
+		if (!mod.side().needsBothEnds()) {
+			throw new IllegalStateException(mod.id() + " declared " + what + ", but its descriptor says side=" + mod.side().name().toLowerCase(Locale.ROOT)
+				+ ": blocks and items must be on both client and server, so only a side=both mod can add them");
+		}
 	}
 
 	private Identifier id(ContentName name) {

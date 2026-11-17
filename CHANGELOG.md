@@ -1,5 +1,19 @@
 # Changelog
 
+## 0.1.1
+
+- **Downloads.** Each release now attaches `graft-<version>.jar`, `graft-fabric-<version>.jar` and
+  `graft-neoforge-<version>.jar` to its GitHub release, with their SHA-256 sums.
+- **`side` in the descriptor.** `side=client` (a zoom, a minimap) or `side=server` (admin tools) marks a mod only one end
+  needs. A server no longer asks joining players for those mods, so a player with True Zoom can join servers without it.
+  A dedicated server doesn't load `side=client` mods, and one-sided mods can't add blocks or items. The default is
+  `side=both`, as before. Mods that use the key need Graft 0.1.1: `depends.graft=[0.1.1,0.2)`.
+- **Pack order.** Mods' assets and data now sit just above vanilla's, so a player's resource packs and a world's data
+  packs override them, as they do vanilla's. Before, mod packs went on top of everything. This takes a thirteenth hook,
+  in `PackRepository.rebuildSelected`. A mod pack already placed in an existing world or options file stays where it is.
+- **Config files survive mod updates.** A setting a mod no longer has is taken out of its file with a warning, and kept
+  at the end as a comment, instead of stopping the game. A value that doesn't fit still stops it (GRAFT-203).
+
 ## 0.1.0
 
 The first release, for Minecraft 26.3. Graft is a Java agent that patches twelve Minecraft methods with the JDK's

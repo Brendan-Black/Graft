@@ -8,10 +8,13 @@ import java.nio.file.FileSystem;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
 import black.graft.ModId;
 import black.graft.ModInfo;
@@ -28,8 +31,9 @@ import net.minecraft.server.packs.repository.ServerPacksSource;
 import net.minecraft.world.flag.FeatureFlagSet;
 
 /**
- * Offers each mod's {@code assets/} as a resource pack and its {@code data/} as a data pack. They're required packs at the
- * top of the list, like vanilla's own: always on, and able to override vanilla's files. Mods don't need a
+ * Offers each mod's {@code assets/} as a resource pack and its {@code data/} as a data pack. They're required packs, always on, placed
+ * just above vanilla's: they override vanilla's files, and a player's resource packs and a world's data packs override
+ * theirs, as they do vanilla's. Mods don't need a
  * {@code pack.mcmeta}; Graft supplies the metadata, so a mod's pack can't be marked for the wrong game version.
  */
 final class ModPacks {
@@ -66,13 +70,23 @@ final class ModPacks {
 	}
 
 	private static Pack pack(ModInfo mod, Path root) {
-		PackLocationInfo location = new PackLocationInfo("mod/" + mod.id(), Component.literal(mod.name()), PackSource.BUILT_IN, Optional.empty());
+		PackLocationInfo location = new PackLocationInfo(packId(mod), Component.literal(mod.name()), PackSource.BUILT_IN, Optional.empty());
 		Pack.Metadata metadata = new Pack.Metadata(
 			Component.literal(mod.description().isEmpty() ? mod.name() : mod.description()),
 			PackCompatibility.COMPATIBLE,
 			FeatureFlagSet.of(),
 			List.of());
 		return new Pack(location, new PathPackResources.PathResourcesSupplier(root), metadata, new PackSelectionConfig(true, Pack.Position.TOP, false));
+	}
+
+	/** Moves mods' newly added packs from the top of {@code selected} to just above vanilla's: see {@link PackOrder}. */
+	static List<Pack> place(List<ModCandidate> mods, List<Pack> selected, Collection<String> requested) {
+		Set<String> ids = mods.stream().map(m -> packId(m.info())).collect(Collectors.toSet());
+		return PackOrder.placeAboveVanilla(selected, Pack::getId, requested, ids);
+	}
+
+	private static String packId(ModInfo mod) {
+		return "mod/" + mod.id();
 	}
 
 	/** The folder a mod's files are in: its development folder, or the root of its jar, opened once and kept open. */

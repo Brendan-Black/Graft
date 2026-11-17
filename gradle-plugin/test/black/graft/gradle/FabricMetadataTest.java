@@ -44,6 +44,11 @@ final class FabricMetadataTest {
 		eq("*", json.object("depends").string("graft"), "Graft for Fabric is always required");
 		ok(json.member("entrypoints").isEmpty(), "no Fabric entrypoints: Graft for Fabric runs the Graft ones");
 		eq("graft.mod.properties", json.object("custom").object("graft").string("descriptor"), "it points back at the descriptor");
+		eq("*", json.string("environment"), "a mod for both sides loads everywhere");
+		eq("client", Json.parseObject(FabricMetadata.json(Descriptors.read(new ByteArrayInputStream("id=zoom\nname=Z\nversion=1\nside=client\n"
+			.getBytes(StandardCharsets.UTF_8)), "test"))).string("environment"), "a client mod is Fabric's environment client");
+		eq("*", Json.parseObject(FabricMetadata.json(Descriptors.read(new ByteArrayInputStream("id=admin\nname=A\nversion=1\nside=server\n"
+			.getBytes(StandardCharsets.UTF_8)), "test"))).string("environment"), "a server mod loads everywhere, since single player runs a server");
 
 		ModInfo pinned = Descriptors.read(new ByteArrayInputStream("id=pinned\nname=P\nversion=1\ndepends.graft=[0.1,0.2)\n"
 			.getBytes(StandardCharsets.UTF_8)), "test");

@@ -13,6 +13,7 @@ import java.util.Optional;
  * description=Hold C to zoom in.
  * authors=Syagrius
  * license=Apache-2.0
+ * side=client
  * entrypoint=black.truezoom.TrueZoom
  * client-entrypoint=black.truezoom.client.TrueZoomClient
  * depends.minecraft=[26.3,26.4)
@@ -27,6 +28,7 @@ import java.util.Optional;
  * @param description      a sentence or two for players; empty if not given
  * @param authors          who made it, in the order given; empty if not given
  * @param license          the license's SPDX id or name; empty if not given
+ * @param side             where the mod is needed; {@link Side#BOTH} if not given
  * @param entrypoint       the {@link Mod} class Graft starts on both client and server, if any
  * @param clientEntrypoint the {@link black.graft.client.ClientMod} class Graft starts on the client only, if any
  * @param dependencies     the mods, and the Minecraft and Graft versions, this mod needs
@@ -38,6 +40,7 @@ public record ModInfo(
 	String description,
 	List<String> authors,
 	String license,
+	Side side,
 	@Nullable String entrypoint,
 	@Nullable String clientEntrypoint,
 	List<Dependency> dependencies) {
