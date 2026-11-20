@@ -9,7 +9,7 @@ plugins {
     id("black.graft.minecraft")
 }
 
-// mavenCentral: the java-standards checks download their formatter and compiler from there. JitPack: black-java's lib.
+// mavenCentral: the java-standards checks download their formatter and compiler from there. JitPack: black-java's lib, TypedString and Version.
 repositories {
     mavenCentral()
     maven("https://jitpack.io")
@@ -26,7 +26,8 @@ java {
 
 // What mods compile against. Every platform (Graft's agent, Graft for Fabric) carries these classes inside its own jar.
 dependencies {
-    api("com.github.Brendan-Black.black-java:lib:1.3.6")
+    api("com.github.Brendan-Black.black-java:lib:1.3.7")
+    api("com.github.Brendan-Black.Version:Black:1.0.0")
     errorprone("com.google.errorprone:error_prone_core:2.52.0")
     errorprone("com.uber.nullaway:nullaway:0.14.3")
 }

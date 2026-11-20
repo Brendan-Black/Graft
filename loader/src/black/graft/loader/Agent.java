@@ -14,7 +14,7 @@ import java.util.jar.JarFile;
 
 import black.graft.Dist;
 import black.graft.Nullable;
-import black.graft.Version;
+import black.version.Version;
 import black.graft.internal.GraftRuntime;
 import black.graft.loader.transform.Fatal;
 import black.graft.loader.transform.GraftTransformer;

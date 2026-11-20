@@ -29,7 +29,7 @@ java {
     withSourcesJar()
 }
 
-// The API and black-java's lib go inside the jar, as in Graft's own loader: one jar to install.
+// The API, black-java's lib, TypedString and Version go inside the jar, as in Graft's own loader: one jar to install.
 val bundled = configurations.create("bundled") {
     isTransitive = false
 }
@@ -38,7 +38,9 @@ configurations.compileOnly { extendsFrom(bundled) }
 // Fabric's own pieces are provided by Fabric at run time, so they're compile-only here.
 dependencies {
     bundled(project(":api"))
-    bundled("com.github.Brendan-Black.black-java:lib:1.3.6")
+    bundled("com.github.Brendan-Black.black-java:lib:1.3.7")
+    bundled("com.github.Brendan-Black:TypedString:1.0.0")
+    bundled("com.github.Brendan-Black.Version:Black:1.0.0")
     compileOnly("net.fabricmc:fabric-loader:0.20.1")
     compileOnly("net.fabricmc:sponge-mixin:0.17.5+mixin.0.8.7")
     compileOnly("net.fabricmc.fabric-api:fabric-api-base:2.0.6+fcdff87f5d")

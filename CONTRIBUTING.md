@@ -35,7 +35,8 @@ ones that come up most here:
   `ErrorCode`, worded for the player who has to fix their mods folder. Add a row to the README's table for a new code.
 - **Leave nothing half-done.** Files are written to a temporary name and moved into place. `ClassPatcher` changes a class
   only if every one of its patches finds its place.
-- **No third-party runtime dependencies.** The JDK, and `black-java`'s `lib` bundled into the jar, are all Graft needs.
+- **No third-party runtime dependencies.** The JDK, and `black-java`'s `lib`, `TypedString` and `Version` bundled into the
+  jar, are all Graft needs.
 - **Patches stay minimal.** A patch adds one call into `Hooks` or `ClientHooks` and nothing else. Logic lives in Graft's
   own classes, where it can be tested.
 

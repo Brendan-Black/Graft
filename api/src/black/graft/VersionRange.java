@@ -1,5 +1,8 @@
 package black.graft;
 
+import black.graft.internal.Releases;
+import black.version.Version;
+
 import java.util.Objects;
 import java.util.Optional;
 
@@ -17,6 +20,10 @@ import java.util.Optional;
  * </table>
  *
  * A bare version such as {@code 1.0} is refused: Maven reads it as "1.0 or anything else", which is never what's meant.
+ *
+ * <p>Versions compare as {@link Version} compares them, where the more precise of two otherwise equal versions is
+ * greater: {@code 26.3.0} is above {@code 26.3}. So {@code (,2.0]} leaves out {@code 2.0.0}, and {@code [1.2]} is
+ * {@code 1.2} alone. Write a bound with as many parts as the versions it will be checked against.
  */
 public final class VersionRange {
 	private static final String ANY = "*";
@@ -86,7 +93,7 @@ public final class VersionRange {
 
 	private static Version parseBound(String range, String bound) {
 		try {
-			return Version.parse(bound.strip());
+			return Releases.parse(bound.strip());
 		} catch (IllegalArgumentException e) {
 			throw invalid(range, String.valueOf(e.getMessage()), e);
 		}
@@ -148,7 +155,7 @@ public final class VersionRange {
 		return Objects.hash(lower, lowerInclusive, upper, upperInclusive);
 	}
 
-	/** The range in the syntax it's read in, with versions written in full: {@code [26.3.0,26.4.0)}. */
+	/** The range in the syntax it's read in, with versions as they were written: {@code [26.3,26.4)}. */
 	@Override
 	public String toString() {
 		if (lower == null && upper == null) {

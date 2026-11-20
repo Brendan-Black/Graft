@@ -16,7 +16,7 @@ import java.util.List;
 import java.util.Map;
 
 import black.graft.Dist;
-import black.graft.Version;
+import black.graft.internal.Releases;
 
 public final class StartupTest {
 	private StartupTest() {}
@@ -43,7 +43,7 @@ public final class StartupTest {
 			.getMessage().contains("expected client or server"), "a bad graft.dist says what fits");
 
 		// Versions
-		eq(Version.parse("26.3"), Versions.minecraft(stream("{\"id\": \"26.3\", \"name\": \"26.3\", \"world_version\": 5023}")),
+		eq(Releases.parse("26.3"), Versions.minecraft(stream("{\"id\": \"26.3\", \"name\": \"26.3\", \"world_version\": 5023}")),
 			"Minecraft's version from version.json");
 		LoadingException snapshot = fails(LoadingException.class, () -> Versions.minecraft(stream("{\"id\": \"26.4-snapshot-8\"}")), "snapshot");
 		eq(ErrorCode.UNKNOWN_MINECRAFT, snapshot.code(), "a snapshot isn't supported");
@@ -52,7 +52,7 @@ public final class StartupTest {
 			"no version.json means no Minecraft");
 		eq(ErrorCode.UNKNOWN_MINECRAFT, fails(LoadingException.class, () -> Versions.minecraft(stream("{\"name\": 1")), "garbled").code(),
 			"a garbled version.json");
-		eq(Version.parse("0.1.0"), Versions.graft(stream("version=0.1.0\n")), "Graft's version from its jar");
+		eq(Releases.parse("0.1.0"), Versions.graft(stream("version=0.1.0\n")), "Graft's version from its jar");
 		fails(IllegalStateException.class, () -> Versions.graft(null), "Graft's version file is required");
 	}
 

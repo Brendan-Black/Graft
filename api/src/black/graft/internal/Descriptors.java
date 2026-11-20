@@ -18,7 +18,7 @@ import black.graft.ModId;
 import black.graft.ModInfo;
 import black.graft.Side;
 import black.graft.Nullable;
-import black.graft.Version;
+import black.version.Version;
 import black.graft.VersionRange;
 
 /** Reads {@code graft.mod.properties}, the descriptor at the root of every mod. */
@@ -73,7 +73,7 @@ public final class Descriptors {
 			}
 			return s.strip();
 		});
-		Version version = required(p, VERSION, origin, problems, Version::parse);
+		Version version = required(p, VERSION, origin, problems, Releases::parse);
 		if (id != null && (id.equals(ModId.MINECRAFT) || id.equals(ModId.GRAFT))) {
 			problems.add(origin + ": the id \"" + id + "\" is reserved for " + (id.equals(ModId.GRAFT) ? "Graft" : "the game"));
 		}

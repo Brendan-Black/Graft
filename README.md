@@ -48,7 +48,7 @@ installation, open *More options*, and add this to the start of *JVM arguments*:
 ```
 
 Put mod jars in the `mods` folder of the installation's game directory (`.minecraft/mods` by default). The launcher
-log's first lines say what Graft found: `Graft 0.1.0 on Minecraft 26.3.0 (client), 1 mod: truezoom 1.0.0`.
+log's first lines say what Graft found: `Graft 0.1.1 on Minecraft 26.3 (client), 1 mod: truezoom 1.0.0`.
 
 **Server.** Put `graft.jar` next to the vanilla `server.jar`, mods in `mods/`, and start with:
 
@@ -136,6 +136,10 @@ Only `id`, `name` and `version` are required. Ids are 2–64 of `a-z 0-9 _`. Ver
 are written as in Maven: `[1.0,2.0)`, `[0.1,)`, `[1.2.0]`, or `*`. A bare `1.0` is refused, because Maven reads it as
 "anything". An unknown key is an error, so a typo can't go unnoticed.
 
+Versions compare as [Version](https://github.com/Brendan-Black/Version) compares them: the numbers first, and when they
+tie, the more precise is greater, so `26.3.0` is above `26.3`. `(,2.0]` leaves out `2.0.0`, and `[1.2]` is `1.2` alone:
+write a bound with as many parts as the versions it will be checked against.
+
 `side` says where the mod is needed. `both`, the default, is for a mod on client and server alike, and a server checks that
 joining players have it. `client` is for a mod only the player's own game needs: a dedicated server doesn't load it.
 `server` is for a mod only a server needs: it loads wherever a server runs, single player included. Neither is asked of
@@ -194,7 +198,7 @@ Everything a mod uses is in `black.graft` and below. Each type's Javadoc is the 
 | `client.ClientSetup` | Declares key bindings and field-of-view steps; client events and config |
 | `Registered<T>` | A handle to declared content, filled in when Minecraft's registries are populated |
 | `ModId`, `ContentName` | Ids and names, checked when they're made |
-| `Version`, `VersionRange`, `Dependency`, `ModInfo` | What descriptors say |
+| `VersionRange`, `Dependency`, `ModInfo` | What descriptors say; versions are [`black.version.Version`](https://github.com/Brendan-Black/Version) |
 | `VanillaTab` | Minecraft's creative tabs |
 | `event.Events`, `event.Event` | Listening; `ServerStarting`, `ServerStopping`, `ServerTick`, `client.ClientTick` |
 | `client.KeyBinding`, `client.FovModifier` | A declared key; a field-of-view step |

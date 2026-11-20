@@ -10,7 +10,6 @@ import black.graft.Dependency;
 import black.graft.ModId;
 import black.graft.ModInfo;
 import black.graft.Side;
-import black.graft.Version;
 import black.graft.VersionRange;
 
 public final class DescriptorTest {
@@ -32,7 +31,7 @@ public final class DescriptorTest {
 			""");
 		eq(new ModId("truezoom"), full.id(), "id");
 		eq("True Zoom", full.name(), "name");
-		eq(Version.parse("1.0.0"), full.version(), "version");
+		eq(Releases.parse("1.0.0"), full.version(), "version");
 		eq(List.of("Syagrius", "Someone Else"), full.authors(), "authors, trimmed, empty ones dropped");
 		eq("black.truezoom.TrueZoom", full.optEntrypoint().orElseThrow(), "entrypoint");
 		eq("black.truezoom.client.TrueZoomClient", full.optClientEntrypoint().orElseThrow(), "client entrypoint");

@@ -1,5 +1,14 @@
 # Changelog
 
+## Unreleased
+
+- **Versions are [Version](https://github.com/Brendan-Black/Version)'s.** `black.graft.Version` is gone: `ModInfo.version()`
+  and `VersionRange` use `black.version.Version`, which Graft's jars now carry. Descriptors still take one to three numbers
+  and no pre-releases. Two versions that differ only in trailing zeros are no longer equal: the more precise is greater,
+  so `26.3.0` is above `26.3`, `(,2.0]` leaves out `2.0.0`, and `[1.2]` is `1.2` alone. Logs and messages show versions
+  as written (`Minecraft 26.3`); `fabric.mod.json` and `neoforge.mods.toml` still write them in full.
+- **black-java 1.3.7**, whose `lib` gets `TypedString` from its own repository.
+
 ## 0.1.1
 
 - **Downloads.** Each release now attaches `graft-<version>.jar`, `graft-fabric-<version>.jar` and

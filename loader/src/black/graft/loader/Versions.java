@@ -9,7 +9,8 @@ import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.util.Properties;
 
-import black.graft.Version;
+import black.graft.internal.Releases;
+import black.version.Version;
 import black.graft.json.Json;
 
 /** Works out which Minecraft and which Graft are running, before any of Minecraft's classes load. */
@@ -37,7 +38,7 @@ public final class Versions {
 			throw new LoadingException(ErrorCode.UNKNOWN_MINECRAFT, "Minecraft's version.json can't be read: " + e.getMessage(), e);
 		}
 		try {
-			return Version.parse(id);
+			return Releases.parse(id);
 		} catch (IllegalArgumentException e) {
 			throw new LoadingException(ErrorCode.UNKNOWN_MINECRAFT,
 				"Minecraft " + id + " isn't a release version, and Graft only runs on releases", e);
@@ -59,6 +60,6 @@ public final class Versions {
 		} catch (IOException e) {
 			throw new IllegalStateException(GRAFT_RESOURCE + " can't be read", e);
 		}
-		return Version.parse(p.getProperty("version", "missing"));
+		return Releases.parse(p.getProperty("version", "missing"));
 	}
 }

@@ -4,7 +4,7 @@ plugins {
     `java-gradle-plugin`
     `maven-publish`
     // Formatting and compiler warnings, checked by `check`: https://github.com/Brendan-Black/black-java
-    id("black.java-standards") version "1.3.6"
+    id("black.java-standards") version "1.3.7"
     // NullAway: whatever isn't @Nullable is never null, checked at compile time.
     id("net.ltgt.errorprone") version "5.2.0"
 }
@@ -26,7 +26,8 @@ java {
 }
 
 dependencies {
-    implementation("com.github.Brendan-Black.black-java:lib:1.3.6")
+    implementation("com.github.Brendan-Black.black-java:lib:1.3.7")
+    implementation("com.github.Brendan-Black.Version:Black:1.0.0")
     errorprone("com.google.errorprone:error_prone_core:2.52.0")
     errorprone("com.uber.nullaway:nullaway:0.14.3")
 }
@@ -38,7 +39,7 @@ val sharedJson = tasks.register<Sync>("sharedJson") {
         include("black/graft/json/**")
         include("black/graft/internal/Descriptors.java", "black/graft/internal/ErrorCode.java", "black/graft/internal/LoadingException.java")
         include("black/graft/ModId.java", "black/graft/ModInfo.java", "black/graft/Dependency.java", "black/graft/Nullable.java")
-        include("black/graft/Version.java", "black/graft/VersionRange.java", "black/graft/Side.java", "black/graft/Dist.java")
+        include("black/graft/internal/Releases.java", "black/graft/VersionRange.java", "black/graft/Side.java", "black/graft/Dist.java")
     }
     into(layout.buildDirectory.dir("shared"))
 }

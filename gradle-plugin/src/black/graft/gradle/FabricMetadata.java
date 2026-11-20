@@ -3,11 +3,12 @@ package black.graft.gradle;
 import java.util.ArrayList;
 import java.util.List;
 
+import black.graft.internal.Releases;
 import black.graft.Dependency;
 import black.graft.ModId;
 import black.graft.ModInfo;
 import black.graft.Side;
-import black.graft.Version;
+import black.version.Version;
 import black.graft.VersionRange;
 
 /**
@@ -34,7 +35,7 @@ final class FabricMetadata {
 		out.append("{\n");
 		out.append("  \"schemaVersion\": 1,\n");
 		out.append("  \"id\": ").append(string(mod.id().value())).append(",\n");
-		out.append("  \"version\": ").append(string(mod.version().toString())).append(",\n");
+		out.append("  \"version\": ").append(string(Releases.full(mod.version()))).append(",\n");
 		out.append("  \"name\": ").append(string(mod.name())).append(",\n");
 		if (!mod.description().isEmpty()) {
 			out.append("  \"description\": ").append(string(mod.description())).append(",\n");
@@ -62,14 +63,14 @@ final class FabricMetadata {
 			return "*";
 		}
 		if (min != null && min.equals(max)) {
-			return "=" + min;
+			return "=" + Releases.full(min);
 		}
 		List<String> parts = new ArrayList<>();
 		if (min != null) {
-			parts.add((range.includesMinimum() ? ">=" : ">") + min);
+			parts.add((range.includesMinimum() ? ">=" : ">") + Releases.full(min));
 		}
 		if (max != null) {
-			parts.add((range.includesMaximum() ? "<=" : "<") + max);
+			parts.add((range.includesMaximum() ? "<=" : "<") + Releases.full(max));
 		}
 		return String.join(" ", parts);
 	}

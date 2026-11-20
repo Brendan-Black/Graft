@@ -26,7 +26,7 @@ java {
     withSourcesJar()
 }
 
-// The API and black-java's lib go inside the jar, as in Graft's own loader: one jar to install.
+// The API, black-java's lib, TypedString and Version go inside the jar, as in Graft's own loader: one jar to install.
 val bundled = configurations.create("bundled") {
     isTransitive = false
 }
@@ -36,7 +36,9 @@ configurations.compileOnly { extendsFrom(bundled) }
 // NeoForge's classes without its patches to Minecraft, which Graft for NeoForge doesn't need.
 dependencies {
     bundled(project(":api"))
-    bundled("com.github.Brendan-Black.black-java:lib:1.3.6")
+    bundled("com.github.Brendan-Black.black-java:lib:1.3.7")
+    bundled("com.github.Brendan-Black:TypedString:1.0.0")
+    bundled("com.github.Brendan-Black.Version:Black:1.0.0")
     compileOnly("net.neoforged:neoforge:26.3.0.103:universal") { isTransitive = false }
     compileOnly("net.neoforged.fancymodloader:loader:12.0.12") { isTransitive = false }
     compileOnly("net.neoforged:bus:8.0.5") { isTransitive = false }

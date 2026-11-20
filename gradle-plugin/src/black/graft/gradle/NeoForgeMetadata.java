@@ -1,5 +1,7 @@
 package black.graft.gradle;
 
+import black.graft.internal.Releases;
+import black.version.Version;
 import black.graft.Dependency;
 import black.graft.ModId;
 import black.graft.ModInfo;
@@ -27,7 +29,7 @@ final class NeoForgeMetadata {
 		out.append('\n');
 		out.append("[[mods]]\n");
 		out.append(MOD_ID).append(string(mod.id().value())).append('\n');
-		out.append("version=").append(string(mod.version().toString())).append('\n');
+		out.append("version=").append(string(Releases.full(mod.version()))).append('\n');
 		out.append("displayName=").append(string(mod.name())).append('\n');
 		if (!mod.description().isEmpty()) {
 			out.append("description=").append(string(mod.description())).append('\n');
@@ -50,9 +52,21 @@ final class NeoForgeMetadata {
 		return out.toString();
 	}
 
-	/** A Graft range as a NeoForge (Maven) range. They're the same syntax, except that any version is {@code [0,)}. */
+	/**
+	 * A Graft range as a NeoForge (Maven) range, versions in full. They're the same syntax, except that any version is
+	 * {@code [0,)}.
+	 */
 	static String range(VersionRange range) {
-		return range.minimum().isEmpty() && range.maximum().isEmpty() ? "[0,)" : range.toString();
+		Version min = range.minimum().orElse(null);
+		Version max = range.maximum().orElse(null);
+		if (min == null && max == null) {
+			return "[0,)";
+		}
+		if (min != null && min.equals(max)) {
+			return "[" + Releases.full(min) + "]";
+		}
+		return (range.includesMinimum() ? "[" : "(") + (min == null ? "" : Releases.full(min)) + ","
+			+ (max == null ? "" : Releases.full(max)) + (range.includesMaximum() ? "]" : ")");
 	}
 
 	private static void dependency(StringBuilder out, ModId mod, ModId on, VersionRange versions) {

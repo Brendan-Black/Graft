@@ -9,7 +9,7 @@ plugins {
     id("black.graft.minecraft")
 }
 
-// mavenCentral: the java-standards checks download their formatter and compiler from there. JitPack: black-java's lib.
+// mavenCentral: the java-standards checks download their formatter and compiler from there. JitPack: black-java's lib, TypedString and Version.
 repositories {
     mavenCentral()
     maven("https://jitpack.io")
@@ -24,7 +24,7 @@ java {
     withJavadocJar()
 }
 
-// The API and black-java's lib (black.TypedString) go inside the jar: the game runs Graft as a single agent jar.
+// The API, black-java's lib, TypedString and Version go inside the jar: the game runs Graft as a single agent jar.
 val bundled = configurations.create("bundled") {
     isTransitive = false
 }
@@ -33,7 +33,9 @@ configurations.testImplementation { extendsFrom(bundled) }
 
 dependencies {
     bundled(project(":api"))
-    bundled("com.github.Brendan-Black.black-java:lib:1.3.6")
+    bundled("com.github.Brendan-Black.black-java:lib:1.3.7")
+    bundled("com.github.Brendan-Black:TypedString:1.0.0")
+    bundled("com.github.Brendan-Black.Version:Black:1.0.0")
     errorprone("com.google.errorprone:error_prone_core:2.52.0")
     errorprone("com.uber.nullaway:nullaway:0.14.3")
 }

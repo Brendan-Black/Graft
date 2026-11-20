@@ -11,7 +11,7 @@ import java.util.Map;
 
 import black.graft.Dependency;
 import black.graft.ModId;
-import black.graft.Version;
+import black.version.Version;
 
 /** Checks that the mods found can run together: one of each id, and every dependency installed at a version it accepts. */
 public final class Resolution {

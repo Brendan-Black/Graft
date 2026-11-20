@@ -28,7 +28,7 @@ public final class JoinCheckTest {
 
 		String missing = JoinCheck.refusal(JoinCheck.mark(HOST, List.of(zoom)), server).orElse("");
 		ok(missing.contains("GRAFT-106"), "a client missing a mod is refused, with the code: " + missing);
-		ok(missing.contains("other 2.0.0") && missing.contains("truezoom 1.0.0"), "and told every mod and version the server has");
+		ok(missing.contains("other 2.0") && missing.contains("truezoom 1.0.0"), "and told every mod and version the server has");
 		ok(JoinCheck.refusal(JoinCheck.mark(HOST, List.of(zoomNewer, other)), server).isPresent(), "another version of a mod is refused");
 		ok(JoinCheck.refusal(JoinCheck.mark(HOST, List.of(zoom, other, Mods.info(Mods.descriptor("extra", "1.0")))), server).isPresent(),
 			"an extra mod is refused");

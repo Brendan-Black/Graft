@@ -9,11 +9,12 @@ import static black.graft.Check.ok;
 
 import java.util.List;
 
-import black.graft.Version;
+import black.graft.internal.Releases;
+import black.version.Version;
 
 public final class ResolutionTest {
-	private static final Version MINECRAFT = Version.parse("26.3");
-	private static final Version GRAFT = Version.parse("0.1.0");
+	private static final Version MINECRAFT = Releases.parse("26.3");
+	private static final Version GRAFT = Releases.parse("0.1.0");
 
 	private ResolutionTest() {}
 
@@ -34,13 +35,13 @@ public final class ResolutionTest {
 			"missing");
 		eq(ErrorCode.MISSING_DEPENDENCY, missing.code(), "a missing mod outranks a wrong version");
 		eq(2, missing.problems().size(), "and both problems are listed: " + missing.problems());
-		ok(missing.getMessage().contains("needs mod absent [1.0.0,), which isn't installed"),
+		ok(missing.getMessage().contains("needs mod absent [1,), which isn't installed"),
 			"the missing mod and its range are named");
 
 		LoadingException wrongMinecraft = fails(LoadingException.class,
 			() -> Resolution.resolve(List.of(Mods.candidate("old", "1.0", "depends.minecraft=[26.2,26.3)")), MINECRAFT, GRAFT), "minecraft");
 		eq(ErrorCode.WRONG_VERSION, wrongMinecraft.code(), "Minecraft at the wrong version");
-		ok(wrongMinecraft.getMessage().contains("but 26.3.0 is installed"), "the installed version is named");
+		ok(wrongMinecraft.getMessage().contains("but 26.3 is installed"), "the installed version is named");
 
 		fails(LoadingException.class,
 			() -> Resolution.resolve(List.of(Mods.candidate("newer", "1.0", "depends.graft=[0.2,)")), MINECRAFT, GRAFT), "Graft too old");
