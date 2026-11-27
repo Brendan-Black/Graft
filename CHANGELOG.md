@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 0.1.2
 
 - **The adapters have names of their own.** Graft for Fabric is now **Cambium**, and Graft for NeoForge is now
   **Rootstock**, so neither carries another project's name. Their downloads are `cambium-<version>.jar` and

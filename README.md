@@ -48,7 +48,7 @@ installation, open *More options*, and add this to the start of *JVM arguments*:
 ```
 
 Put mod jars in the `mods` folder of the installation's game directory (`.minecraft/mods` by default). The launcher
-log's first lines say what Graft found: `Graft 0.1.1 on Minecraft 26.3 (client), 1 mod: truezoom 1.0.0`.
+log's first lines say what Graft found: `Graft 0.1.2 on Minecraft 26.3 (client), 1 mod: truezoom 1.0.0`.
 
 **Server.** Put `graft.jar` next to the vanilla `server.jar`, mods in `mods/`, and start with:
 
