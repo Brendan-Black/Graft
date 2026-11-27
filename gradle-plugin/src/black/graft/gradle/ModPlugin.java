@@ -50,7 +50,7 @@ public final class ModPlugin implements Plugin<Project> {
 			throw new IllegalStateException("the main source set has no resources folder");
 		}
 		// The same jar runs on Fabric and NeoForge: fabric.mod.json and neoforge.mods.toml, written from the descriptor, let
-		// Graft for Fabric and Graft for NeoForge load it.
+		// Cambium and Rootstock load it.
 		TaskProvider<GenerateLoaderMetadata> metadata = project.getTasks().register("graftLoaderMetadata", GenerateLoaderMetadata.class, t -> {
 			t.setGroup(GROUP);
 			t.setDescription("Writes fabric.mod.json and neoforge.mods.toml from graft.mod.properties, so the mod also loads on Fabric and NeoForge.");

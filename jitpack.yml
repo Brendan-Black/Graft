@@ -1,4 +1,4 @@
-# JitPack builds each tag into com.github.Brendan-Black.Graft:{api,loader,fabric,neoforge,gradle-plugin}:<tag>.
+# JitPack builds each tag into com.github.Brendan-Black.Graft:{api,loader,cambium,rootstock,gradle-plugin}:<tag>.
 # JitPack's JDKs stop short of 25, and Gradle must run on 25 to load Graft's own plugin, so this fetches JDK 25 first
 # (Eclipse Temurin, from Adoptium) and runs Gradle on it.
 jdk:
@@ -8,4 +8,4 @@ before_install:
   - mkdir -p $HOME/jdk25 && tar -xzf /tmp/jdk25.tar.gz -C $HOME/jdk25 --strip-components=1
 install:
   - JAVA_HOME=$HOME/jdk25 ./gradlew -p gradle-plugin publishToMavenLocal -x runTests
-  - JAVA_HOME=$HOME/jdk25 ./gradlew :api:publishToMavenLocal :loader:publishToMavenLocal :fabric:publishToMavenLocal :neoforge:publishToMavenLocal -x runTests
+  - JAVA_HOME=$HOME/jdk25 ./gradlew :api:publishToMavenLocal :loader:publishToMavenLocal :cambium:publishToMavenLocal :rootstock:publishToMavenLocal -x runTests

@@ -30,13 +30,13 @@ jobs:
           distribution: corretto
           java-version: '25'
       - uses: gradle/actions/setup-gradle@v6
-      - run: ./gradlew check :loader:jar :fabric:jar :neoforge:jar
+      - run: ./gradlew check :loader:jar :cambium:jar :rootstock:jar
       - run: ./gradlew -p gradle-plugin check
       - name: Collect the jars
         run: |
           v="${TAG#v}"
           mkdir dist
-          cp "loader/build/libs/graft-$v.jar" "fabric/build/libs/graft-fabric-$v.jar" "neoforge/build/libs/graft-neoforge-$v.jar" dist/
+          cp "loader/build/libs/graft-$v.jar" "cambium/build/libs/cambium-$v.jar" "rootstock/build/libs/rootstock-$v.jar" dist/
           (cd dist && sha256sum -- *.jar > SHA256SUMS)
           awk -v v="$v" '/^## /{p = ($2 == v)} p' CHANGELOG.md > notes.md
           test -s notes.md || { echo "CHANGELOG.md has no '## $v' section"; exit 1; }

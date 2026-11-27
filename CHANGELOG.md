@@ -2,6 +2,12 @@
 
 ## Unreleased
 
+- **The adapters have names of their own.** Graft for Fabric is now **Cambium**, and Graft for NeoForge is now
+  **Rootstock**, so neither carries another project's name. Their downloads are `cambium-<version>.jar` and
+  `rootstock-<version>.jar` (were `graft-fabric-…` and `graft-neoforge-…`), their JitPack artifacts
+  `com.github.Brendan-Black.Graft:cambium` and `:rootstock` (were `:fabric` and `:neoforge`), and their packages
+  `black.graft.cambium` and `black.graft.rootstock`. Their mod id on Fabric and NeoForge is still `graft`, so mods built
+  for 0.1.1 load unchanged.
 - **Versions are [Version](https://github.com/Brendan-Black/Version)'s.** `black.graft.Version` is gone: `ModInfo.version()`
   and `VersionRange` use `black.version.Version`, which Graft's jars now carry. Descriptors still take one to three numbers
   and no pre-releases. Two versions that differ only in trailing zeros are no longer equal: the more precise is greater,

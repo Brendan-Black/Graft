@@ -49,8 +49,8 @@ and it never loads the game.
 
 In-game behaviour is tested with game tests on Minecraft's GameTest server. `testmod/` is a mod that exercises Graft's
 API and is never published. Its tests run on Graft's loader (`:testmod:gameTest`),
-on Fabric through Graft for Fabric (`:fabric:gameTest`), and on NeoForge through Graft for NeoForge
-(`:neoforge:gameTest`, which installs a NeoForge server with NeoForge's own installer the first time). `check` runs them
+on Fabric through Cambium (`:cambium:gameTest`), and on NeoForge through Rootstock
+(`:rootstock:gameTest`, which installs a NeoForge server with NeoForge's own installer the first time). `check` runs them
 all, so the three platforms are held to the same behaviour.
 
 Every bug fixed gets a check that would have caught it.

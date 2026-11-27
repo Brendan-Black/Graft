@@ -15,7 +15,7 @@ import black.graft.VersionRange;
  * Writes the {@code fabric.mod.json} that lets Fabric load a Graft mod, from the mod's {@code graft.mod.properties}. The
  * descriptor stays the one source of truth: this is derived from it at build time and never written by hand.
  *
- * <p>The file declares no entrypoints. Graft for Fabric (Fabric mod id {@code graft}) finds Graft mods by their descriptor
+ * <p>The file declares no entrypoints. Cambium (Fabric mod id {@code graft}) finds Graft mods by their descriptor
  * and runs their Graft entrypoints itself, so Fabric only needs the mod's identity and dependencies.
  */
 final class FabricMetadata {
@@ -29,7 +29,7 @@ final class FabricMetadata {
 			graft |= d.id().equals(ModId.GRAFT);
 		}
 		if (!graft) {
-			depends.add(string(ModId.GRAFT.value()) + ": " + string("*")); // every Graft mod needs Graft for Fabric to run on Fabric
+			depends.add(string(ModId.GRAFT.value()) + ": " + string("*")); // every Graft mod needs Cambium to run on Fabric
 		}
 		StringBuilder out = new StringBuilder();
 		out.append("{\n");

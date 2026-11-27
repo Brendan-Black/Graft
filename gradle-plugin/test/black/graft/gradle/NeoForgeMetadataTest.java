@@ -31,11 +31,11 @@ final class NeoForgeMetadataTest {
 		ok(toml.contains("[[mods]]\nmodId=\"quoted\"\nversion=\"2.1.0\"\ndisplayName=\"The \\\"Quoted\\\" Mod\"\n"), "the mod, quotes escaped");
 		ok(toml.contains("description=\"Line one\\nline two\"\n"), "a newline is escaped");
 		ok(toml.contains("authors=\"A, B\"\n"), "authors in one string");
-		ok(!toml.contains("modLoader") && !toml.contains("entryClass"), "no language loader or entry class: Graft for NeoForge runs the mod");
+		ok(!toml.contains("modLoader") && !toml.contains("entryClass"), "no language loader or entry class: Rootstock runs the mod");
 		ok(toml.contains("[[dependencies.quoted]]\nmodId=\"minecraft\"\ntype=\"required\"\nversionRange=\"[26.3.0,26.4.0)\"\nside=\"BOTH\"\n"),
 			"Minecraft's range");
 		ok(toml.contains("[[dependencies.quoted]]\nmodId=\"graft\"\ntype=\"required\"\nversionRange=\"[0,)\"\n"),
-			"Graft for NeoForge is always required");
+			"Rootstock is always required");
 
 		String pinned = NeoForgeMetadata.toml(read("id=pinned\nname=P\nversion=1\ndepends.graft=[0.1,0.2)\n"));
 		ok(pinned.contains("versionRange=\"[0.1.0,0.2.0)\""), "a mod's own Graft range is kept");

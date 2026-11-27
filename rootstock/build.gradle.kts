@@ -33,7 +33,7 @@ val bundled = configurations.create("bundled") {
 configurations.compileOnly { extendsFrom(bundled) }
 
 // NeoForge's own pieces are provided by NeoForge at run time, so they're compile-only here. The universal jar holds
-// NeoForge's classes without its patches to Minecraft, which Graft for NeoForge doesn't need.
+// NeoForge's classes without its patches to Minecraft, which Rootstock doesn't need.
 dependencies {
     bundled(project(":api"))
     bundled("com.github.Brendan-Black.black-java:lib:1.3.7")
@@ -73,7 +73,7 @@ tasks.processResources {
 }
 
 tasks.jar {
-    archiveBaseName = "graft-neoforge"
+    archiveBaseName = "rootstock"
     dependsOn(bundled)
     from(bundled.map { zipTree(it) }) { exclude("META-INF/**", "LICENSE") }
     from(rootProject.file("LICENSE"))
@@ -82,11 +82,11 @@ tasks.jar {
 publishing {
     publications {
         create<MavenPublication>("maven") {
-            artifactId = "neoforge"
+            artifactId = "rootstock"
             version = providers.environmentVariable("VERSION").getOrElse(project.version.toString()) // the tag as written, which JitPack serves
             from(components["java"])
             pom {
-                name = "Graft for NeoForge"
+                name = "Rootstock"
                 description = "Runs Graft mods on NeoForge, alongside NeoForge mods."
                 url = "https://github.com/Brendan-Black/Graft"
                 licenses { license { name = "Apache-2.0"; url = "https://www.apache.org/licenses/LICENSE-2.0" } }
@@ -95,7 +95,7 @@ publishing {
     }
 }
 
-// The game tests, on NeoForge: NeoForge's own server install, Graft for NeoForge, and the same test mod
+// The game tests, on NeoForge: NeoForge's own server install, Rootstock, and the same test mod
 // jar that gameTest runs on Graft's loader and on Fabric, on Minecraft's GameTest server. check runs it.
 //
 // NeoForge ticks game tests only outside production (GameTestHooks.isGametestEnabled), and it decides it's in
@@ -146,7 +146,7 @@ val syncGameTestMods = tasks.register<Sync>("syncNeoForgeGameTestMods") {
 }
 
 val gameTest = tasks.register<JavaExec>("gameTest") {
-    description = "Runs the test mod's game tests on NeoForge, through Graft for NeoForge."
+    description = "Runs the test mod's game tests on NeoForge, through Rootstock."
     group = "verification"
     dependsOn(syncGameTestMods)
     inputs.files(neoForgeMods, tasks.jar, devMinecraftJar)

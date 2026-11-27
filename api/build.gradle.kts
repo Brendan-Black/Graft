@@ -24,7 +24,7 @@ java {
     withJavadocJar()
 }
 
-// What mods compile against. Every platform (Graft's agent, Graft for Fabric) carries these classes inside its own jar.
+// What mods compile against. Every platform (Graft's agent, Cambium) carries these classes inside its own jar.
 dependencies {
     api("com.github.Brendan-Black.black-java:lib:1.3.7")
     api("com.github.Brendan-Black.Version:Black:1.0.0")
@@ -74,7 +74,7 @@ publishing {
             from(components["java"])
             pom {
                 name = "Graft API"
-                description = "The API Graft mods compile against; the same compiled mod runs on Graft's agent and on Graft for Fabric."
+                description = "The API Graft mods compile against; the same compiled mod runs on Graft's agent and on Cambium."
                 url = "https://github.com/Brendan-Black/Graft"
                 licenses { license { name = "Apache-2.0"; url = "https://www.apache.org/licenses/LICENSE-2.0" } }
             }

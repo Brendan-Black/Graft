@@ -1,4 +1,4 @@
-package black.graft.neoforge;
+package black.graft.rootstock;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -32,28 +32,28 @@ import net.neoforged.neoforge.registries.RegisterEvent;
 import net.neoforged.neoforgespi.language.IModFileInfo;
 
 /**
- * Graft for NeoForge: runs Graft mods as part of a NeoForge game. A Graft mod's jar carries a {@code neoforge.mods.toml}
+ * Rootstock: runs Graft mods as part of a NeoForge game. A Graft mod's jar carries a {@code neoforge.mods.toml}
  * next to its {@code graft.mod.properties} (Graft's Gradle plugin writes it), so NeoForge loads it like any other mod,
  * checks its dependencies, and serves its assets and data. This finds those mods, runs their entrypoints, and connects
  * Graft's API to NeoForge's events.
  */
-@Mod(GraftNeoForge.MOD_ID)
-public final class GraftNeoForge {
-	/** Graft for NeoForge's own NeoForge mod id: {@link ModId#GRAFT}, which every Graft mod depends on. */
+@Mod(Rootstock.MOD_ID)
+public final class Rootstock {
+	/** Rootstock's own NeoForge mod id: {@link ModId#GRAFT}, which every Graft mod depends on. */
 	static final String MOD_ID = "graft";
 	private static final System.Logger LOG = System.getLogger(MOD_ID);
 
 	/**
 	 * NeoForge constructs this as it constructs the mods, before any registry event.
 	 *
-	 * @param modBus    Graft for NeoForge's own mod event bus, where registration and creative tab events arrive
-	 * @param container Graft for NeoForge's own mod
+	 * @param modBus    Rootstock's own mod event bus, where registration and creative tab events arrive
+	 * @param container Rootstock's own mod
 	 * @param neoDist   client or dedicated server
 	 */
-	public GraftNeoForge(IEventBus modBus, ModContainer container, net.neoforged.api.distmarker.Dist neoDist) {
+	public Rootstock(IEventBus modBus, ModContainer container, net.neoforged.api.distmarker.Dist neoDist) {
 		Dist dist = neoDist.isClient() ? Dist.CLIENT : Dist.SERVER;
 		List<ModInfo> mods = graftMods(ModList.get().getModFiles()).stream().filter(m -> m.side().runsOn(dist)).toList();
-		GraftRuntime runtime = new GraftRuntime(dist, FMLPaths.CONFIGDIR.get(), mods, GraftNeoForge.class.getClassLoader());
+		GraftRuntime runtime = new GraftRuntime(dist, FMLPaths.CONFIGDIR.get(), mods, Rootstock.class.getClassLoader());
 		GraftRuntime.install(runtime);
 
 		runtime.initializeCommon();
@@ -72,10 +72,10 @@ public final class GraftNeoForge {
 		NeoForge.EVENT_BUS.addListener(ServerStoppingEvent.class, event -> runtime.events().post(new ServerStopping(event.getServer())));
 		NeoForge.EVENT_BUS.addListener(ServerTickEvent.Post.class, event -> runtime.events().post(new ServerTick(event.getServer())));
 		if (dist == Dist.CLIENT) {
-			GraftNeoForgeClient.initialize(runtime, modBus); // a separate class, so a dedicated server never loads client classes
+			RootstockClient.initialize(runtime, modBus); // a separate class, so a dedicated server never loads client classes
 		}
 		runtime.finishStartup();
-		LOG.log(System.Logger.Level.INFO, runtime.summary("Graft for NeoForge " + container.getModInfo().getVersion()));
+		LOG.log(System.Logger.Level.INFO, runtime.summary("Rootstock " + container.getModInfo().getVersion()));
 	}
 
 	/** Every NeoForge mod file that holds a Graft mod, read from its descriptor, in Graft's load order (by id). */

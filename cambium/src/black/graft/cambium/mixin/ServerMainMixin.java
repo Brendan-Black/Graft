@@ -1,4 +1,4 @@
-package black.graft.fabric.mixin;
+package black.graft.cambium.mixin;
 
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;

@@ -28,7 +28,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
 
 /**
- * Graft's API, exercised in a real world: every test here runs on Graft's own loader and on Graft for Fabric, so the two
+ * Graft's API, exercised in a real world: every test here runs on Graft's own loader and on Cambium, so the two
  * platforms are held to the same behaviour. It's only built and run by Graft's own build, never published.
  */
 public final class TestMod implements Mod {

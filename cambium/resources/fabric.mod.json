@@ -2,14 +2,14 @@
   "schemaVersion": 1,
   "id": "graft",
   "version": "${version}",
-  "name": "Graft for Fabric",
+  "name": "Cambium",
   "description": "Runs Graft mods on Fabric, alongside Fabric mods. The same mod jar also runs on Graft's own loader.",
   "license": "Apache-2.0",
   "contact": { "sources": "https://github.com/Brendan-Black/Graft", "issues": "https://github.com/Brendan-Black/Graft/issues" },
   "environment": "*",
   "entrypoints": {
-    "main": ["black.graft.fabric.GraftFabric"],
-    "client": ["black.graft.fabric.GraftFabricClient"]
+    "main": ["black.graft.cambium.Cambium"],
+    "client": ["black.graft.cambium.CambiumClient"]
   },
   "mixins": ["graft.mixins.json"],
   "depends": {

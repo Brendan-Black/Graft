@@ -1,4 +1,4 @@
-package black.graft.fabric;
+package black.graft.cambium;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -33,12 +33,12 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.item.CreativeModeTab;
 
 /**
- * Graft for Fabric: runs Graft mods as part of a Fabric game. A Graft mod's jar carries a {@code fabric.mod.json} next to
+ * Cambium: runs Graft mods as part of a Fabric game. A Graft mod's jar carries a {@code fabric.mod.json} next to
  * its {@code graft.mod.properties} (Graft's Gradle plugin writes it), so Fabric loads it like any other mod, checks its
  * dependencies, and serves its assets and data. This finds those mods, runs their entrypoints, and connects Graft's API to
  * Fabric API's events.
  */
-public final class GraftFabric implements ModInitializer {
+public final class Cambium implements ModInitializer {
 	private static final System.Logger LOG = System.getLogger(ModId.GRAFT.value());
 
 	@Override
@@ -47,7 +47,7 @@ public final class GraftFabric implements ModInitializer {
 		Dist dist = fabric.getEnvironmentType() == EnvType.CLIENT ? Dist.CLIENT : Dist.SERVER;
 		GraftRuntime runtime =
 			new GraftRuntime(dist, fabric.getConfigDir(), graftMods(fabric.getAllMods()).stream().filter(m -> m.side().runsOn(dist)).toList(),
-				GraftFabric.class.getClassLoader());
+				Cambium.class.getClassLoader());
 		GraftRuntime.install(runtime);
 
 		runtime.initializeCommon();
@@ -64,10 +64,10 @@ public final class GraftFabric implements ModInitializer {
 		ServerTickEvents.END_SERVER_TICK.register(server -> runtime.events().post(new ServerTick(server)));
 
 		if (dist == Dist.SERVER) {
-			runtime.finishStartup(); // on a client, GraftFabricClient finishes once client mods have declared theirs
+			runtime.finishStartup(); // on a client, CambiumClient finishes once client mods have declared theirs
 		}
 		String version = fabric.getModContainer(ModId.GRAFT.value()).map(c -> c.getMetadata().getVersion().getFriendlyString()).orElse("?");
-		LOG.log(System.Logger.Level.INFO, runtime.summary("Graft for Fabric " + version));
+		LOG.log(System.Logger.Level.INFO, runtime.summary("Cambium " + version));
 	}
 
 	/** Every Fabric mod that is a Graft mod, read from its descriptor, in Graft's load order (by id). */

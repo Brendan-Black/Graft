@@ -18,7 +18,7 @@ import black.graft.config.ConfigSpec;
  * The running Graft, whatever it runs on: the mods, what they declared, and the event bus. Internal: not part of the API.
  *
  * <p>A platform creates one and drives it. Graft's own agent calls {@link #initializeMods()} from inside Minecraft's
- * bootstrap. Graft for Fabric calls {@link #initializeCommon()} from its mod initializer and {@link #initializeClient()}
+ * bootstrap. Cambium calls {@link #initializeCommon()} from its mod initializer and {@link #initializeClient()}
  * from its client initializer. Either way, {@link #finishStartup()} ends the window for declarations, and the platform
  * then puts the declared content into the game its own way.
  */

@@ -41,8 +41,8 @@ final class FabricMetadataTest {
 		eq("Line one\nline two \\ done", json.string("description"), "newlines and backslashes survive");
 		eq(">=26.3.0 <26.4.0", json.object("depends").string("minecraft"), "Minecraft's range");
 		eq(">=1.0.0", json.object("depends").string("othermod"), "another mod's range");
-		eq("*", json.object("depends").string("graft"), "Graft for Fabric is always required");
-		ok(json.member("entrypoints").isEmpty(), "no Fabric entrypoints: Graft for Fabric runs the Graft ones");
+		eq("*", json.object("depends").string("graft"), "Cambium is always required");
+		ok(json.member("entrypoints").isEmpty(), "no Fabric entrypoints: Cambium runs the Graft ones");
 		eq("graft.mod.properties", json.object("custom").object("graft").string("descriptor"), "it points back at the descriptor");
 		eq("*", json.string("environment"), "a mod for both sides loads everywhere");
 		eq("client", Json.parseObject(FabricMetadata.json(Descriptors.read(new ByteArrayInputStream("id=zoom\nname=Z\nversion=1\nside=client\n"

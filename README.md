@@ -15,7 +15,7 @@ events, key bindings, the field of view, config files and their own assets and d
 redistributed. Mods compile against Mojang's own jar.
 
 A Graft mod is one jar that runs three ways: on Graft's own agent, light and standalone, **on Fabric, alongside Fabric
-mods**, through Graft for Fabric, or **on NeoForge, alongside NeoForge mods**, through Graft for NeoForge. Nothing is
+mods**, through Cambium, or **on NeoForge, alongside NeoForge mods**, through Rootstock. Nothing is
 recompiled. The Gradle plugin writes the jar's `fabric.mod.json` and `neoforge.mods.toml` from its Graft descriptor.
 
 This repository holds:
@@ -24,8 +24,8 @@ This repository holds:
 |---|---|
 | [`api/`](api) | The API mods compile against (`black.graft`), and the runtime every platform shares |
 | [`loader/`](loader) | Graft's own loader: a Java agent |
-| [`fabric/`](fabric) | Graft for Fabric: a Fabric mod that runs Graft mods on Fabric |
-| [`neoforge/`](neoforge) | Graft for NeoForge: a NeoForge mod that runs Graft mods on NeoForge |
+| [`cambium/`](cambium) | Cambium: a Fabric mod that runs Graft mods on Fabric |
+| [`rootstock/`](rootstock) | Rootstock: a NeoForge mod that runs Graft mods on NeoForge |
 | [`gradle-plugin/`](gradle-plugin) | `black.graft.mod`: puts Minecraft on a mod's compile class path and adds `runClient`/`runServer` |
 | [`testmod/`](testmod) | A mod that exercises Graft's API in game tests on every platform; never published |
 
@@ -37,8 +37,8 @@ against Graft from JitPack, the way any mod does.
 Graft 0.1 runs on **Minecraft 26.3** with **Java 25** (the launcher's own runtime for 26.x).
 
 Download the jars from [Releases](https://github.com/Brendan-Black/Graft/releases/latest): `graft-<version>.jar` (called
-`graft.jar` below), `graft-fabric-<version>.jar` and `graft-neoforge-<version>.jar`. `SHA256SUMS` beside them lists each
-jar's checksum.
+`graft.jar` below), `cambium-<version>.jar` and `rootstock-<version>.jar`. `SHA256SUMS` beside them lists each
+jar's checksum. (Releases up to 0.1.1 name those two `graft-fabric-<version>.jar` and `graft-neoforge-<version>.jar`.)
 
 **Client.** Put `graft.jar` somewhere permanent. In the Minecraft launcher, open *Installations*, edit (or copy) the 26.3
 installation, open *More options*, and add this to the start of *JVM arguments*:
@@ -60,10 +60,10 @@ Graft unpacks the server the way the vanilla jar does (into `versions/` and `lib
 the checksum the bundle lists) and starts it with mods. `--server-jar <file>` names a different server jar; everything
 else is passed to Minecraft.
 
-**On Fabric.** Install Fabric Loader 0.20.1+ and Fabric API for 26.3 as usual, then put `graft-fabric.jar` and the Graft
+**On Fabric.** Install Fabric Loader 0.20.1+ and Fabric API for 26.3 as usual, then put `cambium.jar` and the Graft
 mods in `mods/`, with any Fabric mods you like.
 
-**On NeoForge.** Install NeoForge 26.3.0.103+ for 26.3 as usual, then put `graft-neoforge.jar` and the Graft mods in
+**On NeoForge.** Install NeoForge 26.3.0.103+ for 26.3 as usual, then put `rootstock.jar` and the Graft mods in
 `mods/`, with any NeoForge mods you like.
 
 **Clients and servers need the same mods**, at the same versions: blocks and items travel between them as numbers, so
@@ -228,7 +228,7 @@ mods need:
 | Config files | ✓ | library | ✓, typed and checked |
 | Mod assets and data | ✓ | ✓ | ✓, no `pack.mcmeta` needed |
 | Dev environment (`runClient`, `runServer`) | ForgeGradle | Loom | `black.graft.mod` |
-| Runs alongside the other loader's mods | — | — | Fabric and NeoForge mods, through Graft for Fabric and Graft for NeoForge |
+| Runs alongside the other loader's mods | — | — | Fabric and NeoForge mods, through Cambium and Rootstock |
 | Bytecode changes by mods | coremods, mixins | mixins | roadmap: a public patch API |
 | Networking, custom packets | ✓ | ✓ | roadmap |
 | Join check: same mods on both ends | ✓ | ✓ | ✓, on Graft's loader; on Fabric and NeoForge, theirs |
@@ -261,8 +261,8 @@ fails, not your game.
 
 ## Publishing Graft mods
 
-Graft mods are published as Fabric mods that depend on Graft for Fabric, and as NeoForge mods that depend on Graft for
-NeoForge, which is honestly what they are there: they run on each loader with that one library. CurseForge supports
+Graft mods are published as Fabric mods that depend on Cambium, and as NeoForge mods that depend on Rootstock, which
+is honestly what they are there: they run on each loader with that one library. CurseForge supports
 only Forge, NeoForge, Fabric and Quilt, so this is how Graft mods get there: one jar, uploaded for both loaders. On
 Modrinth it can be tagged `fabric` and `neoforge` the same way. Graft's own loader can be listed under Modrinth's
 `java-agent` tag. A `graft` tag of its own is something to ask Modrinth for once there are mods to show.

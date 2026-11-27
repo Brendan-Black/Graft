@@ -11,7 +11,7 @@ import black.graft.VersionRange;
  * Writes the {@code META-INF/neoforge.mods.toml} that lets NeoForge load a Graft mod, from the mod's
  * {@code graft.mod.properties}. Like {@link FabricMetadata}, it's derived at build time and never written by hand.
  *
- * <p>The file names no language loader and no entry class: NeoForge loads such a mod as resources only. Graft for NeoForge
+ * <p>The file names no language loader and no entry class: NeoForge loads such a mod as resources only. Rootstock
  * (NeoForge mod id {@code graft}) finds Graft mods by their descriptor and runs their Graft entrypoints itself.
  */
 final class NeoForgeMetadata {
@@ -47,7 +47,7 @@ final class NeoForgeMetadata {
 			graft |= d.id().equals(ModId.GRAFT);
 		}
 		if (!graft) {
-			dependency(out, mod.id(), ModId.GRAFT, VersionRange.any()); // every Graft mod needs Graft for NeoForge to run on NeoForge
+			dependency(out, mod.id(), ModId.GRAFT, VersionRange.any()); // every Graft mod needs Rootstock to run on NeoForge
 		}
 		return out.toString();
 	}

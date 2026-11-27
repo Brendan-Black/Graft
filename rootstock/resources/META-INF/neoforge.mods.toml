@@ -4,7 +4,7 @@ issueTrackerURL="https://github.com/Brendan-Black/Graft/issues"
 [[mods]]
 modId="graft"
 version="${version}"
-displayName="Graft for NeoForge"
+displayName="Rootstock"
 description="Runs Graft mods on NeoForge, alongside NeoForge mods. The same mod jar also runs on Graft's own loader and on Fabric."
 displayURL="https://github.com/Brendan-Black/Graft"
 

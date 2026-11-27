@@ -76,7 +76,7 @@ tasks.processResources {
 }
 
 tasks.jar {
-    archiveBaseName = "graft-fabric"
+    archiveBaseName = "cambium"
     dependsOn(bundled)
     from(bundled.map { zipTree(it) }) { exclude("META-INF/**", "LICENSE") }
     from(rootProject.file("LICENSE"))
@@ -85,11 +85,11 @@ tasks.jar {
 publishing {
     publications {
         create<MavenPublication>("maven") {
-            artifactId = "fabric"
+            artifactId = "cambium"
             version = providers.environmentVariable("VERSION").getOrElse(project.version.toString()) // the tag as written, which JitPack serves
             from(components["java"])
             pom {
-                name = "Graft for Fabric"
+                name = "Cambium"
                 description = "Runs Graft mods on Fabric, alongside Fabric mods."
                 url = "https://github.com/Brendan-Black/Graft"
                 licenses { license { name = "Apache-2.0"; url = "https://www.apache.org/licenses/LICENSE-2.0" } }
@@ -98,7 +98,7 @@ publishing {
     }
 }
 
-// The game tests, on Fabric: Fabric Loader and Fabric API, Graft for Fabric, and the same test mod jar
+// The game tests, on Fabric: Fabric Loader and Fabric API, Cambium, and the same test mod jar
 // that gameTest runs on Graft's loader, on Minecraft's GameTest server (see ServerMainMixin). check runs it.
 val fabricLauncher = configurations.create("fabricLauncher") { isTransitive = false }
 val fabricMods = configurations.create("fabricMods") { isTransitive = false }
@@ -112,7 +112,7 @@ dependencies {
 val minecraft = extensions.getByType<black.graft.gradle.GraftMinecraftExtension>()
 val gameTestDir = layout.buildDirectory.dir("gametest")
 val gameTest = tasks.register<JavaExec>("gameTest") {
-    description = "Runs the test mod's game tests on Fabric, through Graft for Fabric."
+    description = "Runs the test mod's game tests on Fabric, through Cambium."
     group = "verification"
     val mods = files(fabricMods, tasks.jar)
     val clientJar = minecraft.clientJar
