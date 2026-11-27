@@ -2,6 +2,7 @@ import net.ltgt.gradle.errorprone.errorprone
 
 plugins {
     `java-library`
+    eclipse
     `maven-publish`
     id("black.java-standards")
     id("net.ltgt.errorprone")
@@ -31,6 +32,8 @@ val bundled = configurations.create("bundled") {
     isTransitive = false
 }
 configurations.compileOnly { extendsFrom(bundled) }
+// The IDE (Eclipse model, as VS Code imports it) shows compile-only project dependencies to test code only; this shows them to src/ too.
+eclipse.classpath.plusConfigurations.add(bundled)
 
 // NeoForge's own pieces are provided by NeoForge at run time, so they're compile-only here. The universal jar holds
 // NeoForge's classes without its patches to Minecraft, which Rootstock doesn't need.

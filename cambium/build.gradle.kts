@@ -2,6 +2,7 @@ import net.ltgt.gradle.errorprone.errorprone
 
 plugins {
     `java-library`
+    eclipse
     `maven-publish`
     id("black.java-standards")
     id("net.ltgt.errorprone")
@@ -34,6 +35,8 @@ val bundled = configurations.create("bundled") {
     isTransitive = false
 }
 configurations.compileOnly { extendsFrom(bundled) }
+// The IDE (Eclipse model, as VS Code imports it) shows compile-only project dependencies to test code only; this shows them to src/ too.
+eclipse.classpath.plusConfigurations.add(bundled)
 
 // Fabric's own pieces are provided by Fabric at run time, so they're compile-only here.
 dependencies {

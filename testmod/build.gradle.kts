@@ -2,6 +2,7 @@ import net.ltgt.gradle.errorprone.errorprone
 
 plugins {
     java
+    eclipse
     id("black.java-standards")
     id("net.ltgt.errorprone")
     // Minecraft, the graft configuration, and gameTest, as for any mod.
@@ -24,6 +25,11 @@ dependencies {
     errorprone("com.google.errorprone:error_prone_core:2.52.0")
     errorprone("com.uber.nullaway:nullaway:0.14.3")
 }
+
+// The IDE (Eclipse model, as VS Code imports it) shows compile-only project dependencies to test code only; this shows the API to src/ too.
+val ideApi = configurations.create("ideApi") { isTransitive = false }
+dependencies { ideApi(project(":api")) }
+eclipse.classpath.plusConfigurations.add(ideApi)
 
 sourceSets {
     main {
